@@ -333,15 +333,21 @@ section{padding-block:var(--section-py);overflow:clip}
 }
 .coin-field{position:relative;width:100%;max-width:30rem;aspect-ratio:1/1;margin-inline:auto}
 .coin{
-  position:absolute;width:28%;aspect-ratio:1/1;border-radius:50%;
-  border:2px solid var(--ocre);background:var(--grafite);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  font-family:var(--font-mono);text-align:center;padding:.5rem;
+  position:absolute;width:32%;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  font-family:var(--font-mono);text-align:center;
   will-change:transform,opacity;
-  transition:border-color .4s ease;
 }
-.coin .coin-abbr{font-size:clamp(.85rem,2.2vw,1.15rem);font-weight:700;color:var(--offwhite)}
-.coin .coin-tag{font-size:.5rem;letter-spacing:.08em;opacity:.6;margin-top:.15rem;text-transform:uppercase}
+.coin img{
+  width:100%;height:auto;aspect-ratio:1/1;object-fit:contain;
+  filter:drop-shadow(3px 3px 0 rgba(0,0,0,.4));
+  transition:filter .4s ease;
+}
+.coin-stage.signal-active .coin img{filter:drop-shadow(3px 3px 0 rgba(92,138,74,.45))}
+.coin .coin-tag{
+  font-size:.55rem;letter-spacing:.1em;margin-top:.5rem;text-transform:uppercase;
+  color:var(--ocre);
+}
 /* posições dispersas iniciais — convergem via JS/scroll (transform) */
 .coin[data-coin="tecnica"]{top:4%;left:6%}
 .coin[data-coin="correlacao"]{top:4%;right:6%}
@@ -368,7 +374,6 @@ section{padding-block:var(--section-py);overflow:clip}
   background:var(--verde-mercado);
   box-shadow:0 0 0 3px rgba(92,138,74,.18);
 }
-.coin-stage.signal-active .coin{border-color:var(--verde-mercado)}
 .signal-caption{
   position:absolute;bottom:-2.75rem;left:50%;transform:translateX(-50%);
   font-family:var(--font-mono);font-size:.65rem;letter-spacing:.1em;
@@ -430,7 +435,8 @@ section{padding-block:var(--section-py);overflow:clip}
    AUTORIDADE (5ª dobra)
    ═══════════════════════════════════════════════════════════════ */
 .authority-grid{display:grid;gap:clamp(2.5rem,5vw,3rem)}
-.authority-photo{aspect-ratio:3/4}
+.authority-photo{display:flex;align-items:flex-end;justify-content:center}
+.authority-photo img{width:100%;max-width:26rem;height:auto}
 .authority-copy .h-lg{margin-bottom:1.5rem}
 .authority-copy p{opacity:.92;font-size:1.02rem}
 .seal-row{
@@ -673,18 +679,15 @@ section{padding-block:var(--section-py);overflow:clip}
       <div class="coin-stage" id="coin-stage" aria-hidden="true">
         <div class="coin-field" id="coin-field">
           <div class="coin" data-coin="tecnica">
-            <!-- ATIVO REAL: moeda "análise técnica" fornecida -->
-            <span class="coin-abbr">AT</span>
+            <img src="assets/images/moeda-analise-tecnica.webp" alt="" width="480" height="480" loading="eager">
             <span class="coin-tag">Técnica</span>
           </div>
           <div class="coin" data-coin="correlacao">
-            <!-- ATIVO REAL: moeda "correlação entre mercados" fornecida -->
-            <span class="coin-abbr">COR</span>
+            <img src="assets/images/moeda-correlacao.webp" alt="" width="480" height="480" loading="eager">
             <span class="coin-tag">Correlação</span>
           </div>
           <div class="coin" data-coin="fluxo">
-            <!-- ATIVO REAL: moeda "fluxo institucional" fornecida -->
-            <span class="coin-abbr">FI</span>
+            <img src="assets/images/moeda-fluxo-institucional.webp" alt="" width="480" height="480" loading="eager">
             <span class="coin-tag">Fluxo</span>
           </div>
           <div class="signal-chart">
@@ -772,9 +775,8 @@ section{padding-block:var(--section-py);overflow:clip}
 <!-- ═══ 5ª DOBRA — AUTORIDADE ═══ -->
 <section class="texture bg-ocre" aria-labelledby="authority-title">
   <div class="container authority-grid">
-    <!-- ATIVO REAL: foto do Edgard Matos, tratada no sistema visual (bloco de cor atrás) -->
-    <div class="authority-photo asset-slot reveal" role="img" aria-label="Foto de Edgard Matos, tratada no sistema visual do KERBEROS">
-      FOTO — Edgard Matos
+    <div class="authority-photo reveal">
+      <img src="assets/images/edgard-matos.webp" alt="Edgard Matos, criador do KERBEROS, sorrindo de braços cruzados" width="900" height="1248" loading="lazy">
     </div>
     <div class="authority-copy reveal">
       <span class="kicker section-kicker">Quem constrói o KERBEROS</span>
