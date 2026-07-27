@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KERBEROS — O sinal só existe quando três leituras validam o mesmo lado</title>
+<meta name="description" content="KERBEROS, o novo indicador de Edgard Matos, campeão da Profit League. Análise técnica, correlação entre mercados e fluxo institucional validando o mesmo sinal antes de aparecer no seu gráfico. Live de lançamento dia 11/08, às 19h.">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="KERBEROS — Tripla Autenticação de Sinal">
+<meta property="og:description" content="O trader não perde por entrar errado. Perde por entrar tarde. Conheça o KERBEROS na live de lançamento, 11/08 às 19h.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0D0D0F">
+
+<!-- ═══════════════════════════════════════════════════════════════
+     FONTES
+     Tipografia real do projeto: BD Plakatbau (headlines) e Salo (corpo).
+     São fontes licenciadas — os arquivos (.woff2) devem ser fornecidos
+     e referenciados nos blocos @font-face abaixo. Até lá, o sistema usa
+     um fallback aproximado (Oswald / Source Serif 4), carregado via
+     Google Fonts, para manter a intenção tipográfica do projeto.
+     ═══════════════════════════════════════════════════════════════ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   @FONT-FACE — ATIVOS REAIS
+   Substituir os caminhos abaixo pelos arquivos licenciados quando
+   disponíveis. Enquanto os arquivos não existirem, as regras falham
+   silenciosamente e o navegador usa o fallback definido em --font-*.
+   ═══════════════════════════════════════════════════════════════ */
+@font-face{
+  font-family:"BD Plakatbau";
+  src:url("assets/fonts/bd-plakatbau-black.woff2") format("woff2"); /* ATIVO REAL: arquivo da fonte BD Plakatbau */
+  font-weight:900;
+  font-display:swap;
+}
+@font-face{
+  font-family:"Salo";
+  src:url("assets/fonts/salo-regular.woff2") format("woff2"); /* ATIVO REAL: arquivo da fonte Salo */
+  font-weight:400;
+  font-display:swap;
+}
+@font-face{
+  font-family:"Salo";
+  src:url("assets/fonts/salo-medium.woff2") format("woff2"); /* ATIVO REAL: arquivo da fonte Salo, peso médio */
+  font-weight:500;
+  font-display:swap;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESET
+   ═══════════════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important;scroll-behavior:auto!important}
+}
+img,svg{display:block;max-width:100%}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit;text-decoration:none}
+ul,ol{list-style:none}
+input,textarea{font:inherit;color:inherit}
+
+/* ═══════════════════════════════════════════════════════════════
+   DESIGN TOKENS
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  /* cor — fundo/superfície/texto */
+  --basalto:#0D0D0F;
+  --grafite:#232326;
+  --offwhite:#EDE7DA;
+  --ocre:#C07E33;
+  --musgo:#33512A;
+  --salvia:#A8B89C;
+  /* cor — dado de mercado (uso restrito a gráficos/prints) */
+  --verde-mercado:#5C8A4A;
+  --vermelho-mercado:#A8342E;
+
+  /* tipografia */
+  --font-display:"BD Plakatbau","Oswald",sans-serif; /* fallback condensada pesada, nunca Inter/Geist */
+  --font-body:"Salo","Source Serif 4",Georgia,serif;
+  --font-mono:"JetBrains Mono","Courier New",monospace;
+
+  /* ritmo */
+  --container:78rem;
+  --gutter:clamp(1.25rem,5vw,3.5rem);
+  --section-py:clamp(4rem,10vw,8rem);
+  --cut:22px; /* tamanho do corte de canto (cunhagem) */
+
+  /* textura de papel áspero — SVG de ruído fractal reutilizado em todo fundo */
+  --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BASE
+   ═══════════════════════════════════════════════════════════════ */
+body{
+  background:var(--basalto);
+  color:var(--offwhite);
+  font-family:var(--font-body);
+  font-size:1.0625rem;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{
+  font-family:var(--font-display);
+  font-weight:900;
+  text-transform:uppercase;
+  line-height:0.92;
+  letter-spacing:-0.01em;
+}
+.kicker,.mono,.microcopy,label,.tag{
+  font-family:var(--font-mono);
+  text-transform:uppercase;
+  letter-spacing:0.14em;
+}
+p{max-width:38rem}
+.container{max-width:var(--container);margin-inline:auto;padding-inline:var(--gutter)}
+
+/* textura sobreposta em todo fundo de seção */
+.texture{position:relative;isolation:isolate}
+.texture::before{
+  content:"";
+  position:absolute;inset:0;
+  background-image:var(--noise);
+  background-size:180px 180px;
+  opacity:0.05;
+  mix-blend-mode:overlay;
+  pointer-events:none;
+  z-index:1;
+}
+.texture > *{position:relative;z-index:2}
+
+.bg-basalto{background:var(--basalto);color:var(--offwhite)}
+.bg-grafite{background:var(--grafite);color:var(--offwhite)}
+.bg-musgo{background:var(--musgo);color:var(--offwhite)}
+.bg-salvia{background:var(--salvia);color:var(--basalto)}
+.bg-ocre{background:var(--ocre);color:var(--basalto)}
+
+.skip-link{
+  position:absolute;left:1rem;top:-4rem;
+  background:var(--ocre);color:var(--basalto);
+  padding:.75rem 1.25rem;font-family:var(--font-mono);text-transform:uppercase;
+  letter-spacing:.1em;z-index:1000;transition:top .2s ease;
+}
+.skip-link:focus{top:1rem}
+
+:focus-visible{outline:2px solid var(--ocre);outline-offset:3px}
+
+.visually-hidden{
+  position:absolute;width:1px;height:1px;overflow:hidden;
+  clip:rect(0,0,0,0);white-space:nowrap;border:0;padding:0;margin:-1px;
+}
+
+/* corte de canto — geometria de cunhagem */
+.clip-corner{
+  clip-path:polygon(0 0,calc(100% - var(--cut)) 0,100% var(--cut),100% 100%,0 100%);
+}
+.clip-corner-both{
+  clip-path:polygon(var(--cut) 0,calc(100% - var(--cut)) 0,100% var(--cut),100% 100%,0 100%,0 var(--cut));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BOTÃO — tratamento único em toda a página
+   ═══════════════════════════════════════════════════════════════ */
+.btn{
+  display:inline-flex;align-items:center;gap:.6em;
+  background:var(--ocre);color:var(--basalto);
+  font-family:var(--font-mono);font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;font-size:.85rem;
+  padding:1.1em 1.6em;
+  clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%);
+  box-shadow:5px 5px 0 var(--basalto);
+  transition:transform .15s ease, box-shadow .15s ease;
+  border:1px solid var(--basalto);
+}
+.bg-basalto .btn,.bg-grafite .btn,.bg-musgo .btn{box-shadow:5px 5px 0 var(--offwhite)}
+.btn:hover{transform:translate(2px,2px);box-shadow:3px 3px 0 var(--basalto)}
+.bg-basalto .btn:hover,.bg-grafite .btn:hover,.bg-musgo .btn:hover{box-shadow:3px 3px 0 var(--offwhite)}
+.btn:active{transform:translate(5px,5px);box-shadow:0 0 0 var(--basalto)}
+.btn-arrow{font-size:1.1em;line-height:1}
+
+.cta-row{margin-top:clamp(2rem,5vw,3rem)}
+
+/* ═══════════════════════════════════════════════════════════════
+   BARRA FIXA DE TOPO
+   ═══════════════════════════════════════════════════════════════ */
+.topbar{
+  position:sticky;top:0;z-index:500;
+  background:var(--basalto);
+  border-bottom:1px solid rgba(237,231,218,.14);
+}
+.topbar-inner{
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding-block:.6rem;
+  flex-wrap:wrap;
+}
+.topbar-label{font-size:.65rem;color:var(--offwhite);opacity:.7;display:none}
+.countdown{
+  display:flex;align-items:baseline;gap:.5rem;
+  font-family:var(--font-mono);
+}
+.countdown .unit{display:flex;flex-direction:column;align-items:center;min-width:2.6ch}
+.countdown .val{font-size:1.15rem;font-weight:700;color:var(--ocre);font-variant-numeric:tabular-nums}
+.countdown .lbl{font-size:.55rem;letter-spacing:.12em;opacity:.65}
+.countdown .sep{color:var(--offwhite);opacity:.3;font-size:1rem;align-self:flex-start;margin-top:.05rem}
+.topbar .btn{padding:.75em 1.1em;font-size:.7rem;box-shadow:3px 3px 0 var(--offwhite)}
+.topbar .btn:hover{box-shadow:2px 2px 0 var(--offwhite);transform:translate(1px,1px)}
+
+@media (min-width:640px){
+  .topbar-label{display:block}
+  .countdown .val{font-size:1.4rem}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TIPOGRAFIA DE SEÇÃO — utilitários compartilhados
+   ═══════════════════════════════════════════════════════════════ */
+section{padding-block:var(--section-py);overflow:clip}
+.section-kicker{
+  font-size:.7rem;color:var(--ocre);margin-bottom:1rem;display:block;
+}
+.bg-salvia .section-kicker,.bg-ocre .section-kicker{color:var(--musgo)}
+.h-xl{font-size:clamp(2.4rem,7.5vw,6.4rem)}
+.h-lg{font-size:clamp(2rem,5.5vw,4.4rem)}
+.h-md{font-size:clamp(1.5rem,3.4vw,2.4rem)}
+.eyebrow-num{font-family:var(--font-mono);font-size:.75rem;opacity:.55}
+
+/* ═══════════════════════════════════════════════════════════════
+   PLACEHOLDER DE ATIVO — usado para todo espaço reservado a
+   imagem/foto/print real que ainda não foi entregue.
+   ═══════════════════════════════════════════════════════════════ */
+.asset-slot{
+  border:1.5px dashed rgba(237,231,218,.35);
+  background:rgba(237,231,218,.04);
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  padding:2rem;min-height:14rem;
+  font-family:var(--font-mono);font-size:.68rem;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--offwhite);opacity:.6;line-height:1.7;
+}
+.bg-salvia .asset-slot,.bg-ocre .asset-slot{border-color:rgba(13,13,15,.35);color:var(--basalto);background:rgba(13,13,15,.05)}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO
+   ═══════════════════════════════════════════════════════════════ */
+.hero{padding-top:clamp(2.5rem,6vw,4.5rem)}
+.hero-grid{
+  display:grid;gap:clamp(2.5rem,5vw,3rem);
+}
+.hero-copy .h-xl{margin-bottom:1.5rem}
+.hero-copy .h-xl em{
+  font-style:normal;color:var(--ocre);
+}
+.hero-sub{font-size:1.1rem;opacity:.88;margin-bottom:0}
+.hero-media{
+  border:1px solid rgba(237,231,218,.16);
+  background:var(--grafite);
+}
+.hero-form-wrap{
+  background:var(--grafite);
+  padding:clamp(1.75rem,3vw,2.5rem);
+  border:1px solid rgba(237,231,218,.14);
+  margin-top:clamp(2.5rem,5vw,3rem);
+}
+.hero-form-wrap h2{font-size:clamp(1.4rem,2.6vw,1.9rem);margin-bottom:.4rem}
+.form-note{font-size:.85rem;opacity:.7;margin-bottom:1.5rem;font-family:var(--font-body)}
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:.65rem;margin-bottom:.5rem;opacity:.75}
+.field input{
+  width:100%;background:var(--basalto);border:1px solid rgba(237,231,218,.25);
+  color:var(--offwhite);padding:.9em 1em;font-family:var(--font-body);font-size:1rem;
+}
+.field input:focus{border-color:var(--ocre)}
+.form-microcopy{font-size:.75rem;opacity:.6;margin-top:.9rem;font-family:var(--font-mono);letter-spacing:.04em;text-transform:uppercase}
+
+.check-list{margin-top:1.75rem;display:grid;gap:.75rem}
+.check-list li{display:flex;gap:.75rem;align-items:flex-start;font-size:.92rem;opacity:.92}
+/* marca própria — não é ícone de biblioteca: losango cortado (selo de validação) */
+.mark-check{
+  flex:none;width:.8rem;height:.8rem;margin-top:.3rem;
+  background:var(--ocre);
+  clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);
+  position:relative;
+}
+.mark-check::after{
+  content:"";position:absolute;inset:28%;background:var(--basalto);
+  clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);
+}
+
+.subscriber-count{
+  margin-top:2rem;font-family:var(--font-mono);font-size:.8rem;
+  letter-spacing:.06em;color:var(--ocre);
+}
+.subscriber-count strong{font-size:1.1em}
+
+@media (min-width:960px){
+  .hero-grid{grid-template-columns:1.05fr .95fr;align-items:start}
+  .hero-form-wrap{margin-top:0}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PROBLEMA (2ª dobra)
+   ═══════════════════════════════════════════════════════════════ */
+.problem-grid{display:grid;gap:clamp(2.5rem,5vw,3rem)}
+.problem-copy .h-lg{margin-bottom:1.75rem}
+.problem-copy p{font-size:1.08rem;opacity:.9;margin-bottom:1.5rem}
+.pull-quote{
+  font-family:var(--font-display);text-transform:uppercase;
+  font-size:clamp(1.5rem,3vw,2.1rem);line-height:1.05;
+  color:var(--ocre);border-left:3px solid var(--ocre);padding-left:1.25rem;
+  margin-block:2rem;max-width:34rem;
+}
+@media (min-width:960px){
+  .problem-grid{grid-template-columns:.95fr 1.05fr}
+  .problem-grid.reverse{direction:rtl}
+  .problem-grid.reverse > *{direction:ltr}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MECANISMO — mecânica-assinatura (3ª dobra)
+   ═══════════════════════════════════════════════════════════════ */
+.mechanism-head{max-width:44rem;margin-inline:auto;text-align:left;margin-bottom:clamp(3rem,6vw,5rem)}
+.mechanism-head .h-lg{margin-bottom:1.25rem}
+.mechanism-head p{opacity:.85;font-size:1.05rem}
+
+/* palco da mecânica das moedas */
+.coin-stage-wrap{height:250vh;position:relative;margin-bottom:clamp(3rem,6vw,5rem)}
+.coin-stage{
+  position:sticky;top:0;height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;overflow:hidden;
+}
+.coin-field{position:relative;width:100%;max-width:30rem;aspect-ratio:1/1;margin-inline:auto}
+.coin{
+  position:absolute;width:32%;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  font-family:var(--font-mono);text-align:center;
+  will-change:transform,opacity;
+}
+.coin img{
+  width:100%;height:auto;aspect-ratio:1/1;object-fit:contain;
+  filter:drop-shadow(3px 3px 0 rgba(0,0,0,.4));
+  transition:filter .4s ease;
+}
+.coin-stage.signal-active .coin img{filter:drop-shadow(3px 3px 0 rgba(92,138,74,.45))}
+.coin .coin-tag{
+  font-size:.55rem;letter-spacing:.1em;margin-top:.5rem;text-transform:uppercase;
+  color:var(--ocre);
+}
+/* posições dispersas iniciais — convergem via JS/scroll (transform) */
+.coin[data-coin="tecnica"]{top:4%;left:6%}
+.coin[data-coin="correlacao"]{top:4%;right:6%}
+.coin[data-coin="fluxo"]{bottom:2%;left:50%;transform:translateX(-50%)}
+
+.signal-chart{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:52%;aspect-ratio:1/1;border:1.5px solid rgba(237,231,218,.3);
+  display:flex;align-items:center;justify-content:center;
+  background:var(--basalto);
+}
+.signal-chart::before{
+  content:"";position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(237,231,218,.08) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(237,231,218,.08) 1px,transparent 1px);
+  background-size:20% 20%;
+}
+.signal-line{
+  position:relative;width:70%;height:2px;background:rgba(237,231,218,.4);
+  transition:background-color .5s ease,box-shadow .5s ease;
+}
+.coin-stage.signal-active .signal-line{
+  background:var(--verde-mercado);
+  box-shadow:0 0 0 3px rgba(92,138,74,.18);
+}
+.signal-caption{
+  position:absolute;bottom:-2.75rem;left:50%;transform:translateX(-50%);
+  font-family:var(--font-mono);font-size:.65rem;letter-spacing:.1em;
+  text-transform:uppercase;opacity:.55;white-space:nowrap;
+}
+.coin-stage.signal-active .signal-caption{opacity:.95;color:var(--verde-mercado)}
+
+.mechanism-image{margin-bottom:clamp(3rem,6vw,5rem)}
+
+/* sticky stack de cards (não grid) */
+.stack{position:relative}
+.stack-card{
+  position:sticky;
+  background:var(--grafite);
+  border:1px solid rgba(237,231,218,.14);
+  padding:clamp(1.75rem,4vw,3rem);
+  margin-bottom:1.5rem;
+  clip-path:polygon(0 0,calc(100% - 28px) 0,100% 28px,100% 100%,0 100%);
+}
+.stack-card:nth-child(1){top:5.5rem}
+.stack-card:nth-child(2){top:7rem}
+.stack-card:nth-child(3){top:8.5rem}
+.stack-card:nth-child(4){top:10rem;background:var(--ocre);color:var(--basalto);border-color:var(--basalto)}
+.stack-card .eyebrow-num{color:var(--ocre)}
+.stack-card:nth-child(4) .eyebrow-num{color:var(--basalto);opacity:.6}
+.stack-card h3{font-size:clamp(1.5rem,3.4vw,2.1rem);margin-block:.6rem 1rem}
+.stack-card p{opacity:.88;font-size:1rem}
+.stack-card:nth-child(4) p{opacity:.85}
+
+/* ═══════════════════════════════════════════════════════════════
+   DIFERENCIAÇÃO (4ª dobra)
+   ═══════════════════════════════════════════════════════════════ */
+.diff-head{max-width:46rem;margin-bottom:clamp(2.5rem,5vw,3.5rem)}
+.diff-head .h-lg{margin-bottom:1.25rem}
+.diff-head p{opacity:.85}
+.compare{display:grid;gap:1.25rem}
+.compare-card{
+  border:1px solid rgba(237,231,218,.16);padding:clamp(1.5rem,3vw,2.25rem);
+}
+.compare-card h3{font-family:var(--font-mono);text-transform:uppercase;font-size:.85rem;
+  letter-spacing:.08em;margin-bottom:1.25rem;opacity:.6;font-weight:700}
+.compare-card ul{display:grid;gap:.65rem;font-size:.98rem}
+.compare-card.muted{opacity:.55}
+.compare-card.hero-card{
+  background:var(--ocre);color:var(--basalto);
+  clip-path:polygon(0 0,calc(100% - 28px) 0,100% 28px,100% 100%,0 100%);
+  border:none;
+}
+.compare-card.hero-card h3{opacity:.75;color:var(--basalto)}
+.compare-card.hero-card li{font-weight:500}
+.pull-quote.center{margin-inline:auto;text-align:left;margin-top:clamp(2.5rem,5vw,3.5rem)}
+
+@media (min-width:900px){
+  .compare{grid-template-columns:.85fr 1.15fr;align-items:stretch}
+  .compare-card.hero-card{padding:clamp(2rem,3.5vw,3rem)}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   AUTORIDADE (5ª dobra)
+   ═══════════════════════════════════════════════════════════════ */
+.authority-grid{display:grid;gap:clamp(2.5rem,5vw,3rem)}
+.authority-photo{display:flex;align-items:flex-end;justify-content:center}
+.authority-photo img{width:100%;max-width:26rem;height:auto}
+.authority-copy .h-lg{margin-bottom:1.5rem}
+.authority-copy p{opacity:.92;font-size:1.02rem}
+.seal-row{
+  margin-top:2.25rem;display:flex;flex-wrap:wrap;gap:.6rem .9rem;
+  font-family:var(--font-mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;
+}
+.seal{
+  border:1px solid var(--basalto);padding:.5em .85em;
+  display:flex;align-items:center;gap:.5em;
+}
+.seal::before{content:"";width:6px;height:6px;background:var(--basalto);transform:rotate(45deg);flex:none}
+@media (min-width:960px){
+  .authority-grid{grid-template-columns:.8fr 1.2fr;align-items:center}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PROVA DE RESULTADO (6ª dobra)
+   ═══════════════════════════════════════════════════════════════ */
+.proof-top{display:grid;gap:clamp(2rem,5vw,3rem);align-items:center;margin-bottom:clamp(3rem,6vw,4.5rem)}
+.bronze-num{
+  font-family:var(--font-display);font-weight:900;
+  font-size:clamp(6rem,18vw,13rem);line-height:.8;color:var(--ocre);
+  /* ATIVO REAL: substituir por numeral fundido em bronze (imagem/objeto 3D) */
+}
+.bronze-num sup{font-size:.32em;top:-1.5em}
+.proof-copy .h-md{margin-bottom:1rem}
+.proof-copy p{opacity:.88;font-size:.98rem;margin-bottom:1rem}
+.methodology-note{
+  font-family:var(--font-mono);font-size:.72rem;letter-spacing:.04em;
+  opacity:.55;border-top:1px dashed rgba(237,231,218,.25);padding-top:.85rem;margin-top:1.25rem;
+}
+@media (min-width:900px){
+  .proof-top{grid-template-columns:.7fr 1.3fr}
+}
+.proof-mosaic{
+  display:grid;gap:.85rem;grid-template-columns:repeat(6,1fr);
+  margin-bottom:2rem;
+}
+.proof-mosaic .asset-slot:nth-child(1){grid-column:span 6}
+.proof-mosaic .asset-slot:nth-child(2){grid-column:span 3}
+.proof-mosaic .asset-slot:nth-child(3){grid-column:span 3}
+@media (min-width:760px){
+  .proof-mosaic .asset-slot:nth-child(1){grid-column:span 3;grid-row:span 2}
+  .proof-mosaic .asset-slot:nth-child(2){grid-column:span 3}
+  .proof-mosaic .asset-slot:nth-child(3){grid-column:span 3}
+}
+.proof-caption{font-size:.95rem;opacity:.85;margin-bottom:1.75rem}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMBO (7ª dobra)
+   ═══════════════════════════════════════════════════════════════ */
+.combo .h-lg{max-width:34rem;margin-bottom:clamp(2.5rem,5vw,3.5rem)}
+.combo-list{display:grid;gap:0}
+.combo-item{
+  display:flex;align-items:baseline;justify-content:space-between;gap:1rem;
+  padding-block:1.25rem;border-top:1px solid rgba(13,13,15,.2);
+  font-size:clamp(1.05rem,2vw,1.3rem);font-family:var(--font-body);font-weight:500;
+}
+.combo-item:last-child{border-bottom:1px solid rgba(13,13,15,.2)}
+.combo-item .idx{font-family:var(--font-mono);font-size:.75rem;opacity:.55}
+.combo-item .desc{font-size:.75rem;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.03em;opacity:.6;max-width:16rem;text-align:right}
+
+/* ═══════════════════════════════════════════════════════════════
+   PÚBLICO (8ª dobra)
+   ═══════════════════════════════════════════════════════════════ */
+.audience .h-lg{margin-bottom:clamp(2.5rem,5vw,3rem)}
+.audience-list{display:grid;gap:1.1rem;max-width:44rem}
+.audience-list li{
+  display:flex;gap:1rem;align-items:flex-start;
+  font-size:1.05rem;padding-bottom:1.1rem;border-bottom:1px solid rgba(168,184,156,.35);
+}
+.audience-list li:last-child{border-bottom:none}
+.mark-dot{flex:none;width:.6rem;height:.6rem;margin-top:.5rem;background:var(--musgo);transform:rotate(45deg)}
+
+/* ═══════════════════════════════════════════════════════════════
+   FAQ (9ª dobra)
+   ═══════════════════════════════════════════════════════════════ */
+.faq .h-lg{margin-bottom:clamp(2rem,4vw,3rem)}
+.faq-list{border-top:1px solid rgba(237,231,218,.18)}
+.faq-item{border-bottom:1px solid rgba(237,231,218,.18)}
+.faq-item summary{
+  display:flex;align-items:center;justify-content:space-between;gap:1.5rem;
+  padding-block:1.4rem;cursor:pointer;list-style:none;
+  font-family:var(--font-body);font-weight:500;font-size:clamp(1rem,2vw,1.15rem);
+}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::marker{content:""}
+/* marca de expandir própria — não é chevron de biblioteca */
+.mark-expand{
+  flex:none;position:relative;width:1.1rem;height:1.1rem;
+}
+.mark-expand::before,.mark-expand::after{
+  content:"";position:absolute;background:var(--ocre);transition:transform .25s ease;
+}
+.mark-expand::before{left:0;top:50%;width:100%;height:2px;transform:translateY(-50%)}
+.mark-expand::after{top:0;left:50%;width:2px;height:100%;transform:translateX(-50%)}
+.faq-item[open] .mark-expand::after{transform:translateX(-50%) rotate(90deg);opacity:0}
+.faq-item .faq-a{padding-bottom:1.5rem;padding-right:2.5rem;opacity:.85;font-size:.98rem}
+
+/* ═══════════════════════════════════════════════════════════════
+   FECHAMENTO (10ª dobra) — única seção centralizada
+   ═══════════════════════════════════════════════════════════════ */
+.closing{text-align:center}
+.closing::before{opacity:.09} /* textura mais visível nesta seção */
+.closing-title{
+  max-width:56rem;margin-inline:auto;margin-bottom:1.75rem;
+  font-size:clamp(2.2rem,6.5vw,5.2rem);
+}
+.closing-title span{display:block}
+.closing p{max-width:36rem;margin-inline:auto;opacity:.85;font-size:1.05rem}
+.closing .cta-row{display:flex;justify-content:center}
+
+/* ═══════════════════════════════════════════════════════════════
+   DISCLAIMER / FOOTER
+   ═══════════════════════════════════════════════════════════════ */
+.disclaimer{
+  border-top:1px solid rgba(237,231,218,.14);padding-block:clamp(2.5rem,5vw,3.5rem);
+}
+.disclaimer-inner{display:grid;gap:1.75rem;align-items:center}
+.disclaimer p{
+  font-family:var(--font-mono);font-size:.68rem;line-height:1.7;opacity:.55;
+  letter-spacing:.01em;max-width:52rem;
+}
+.nelogica-logo{
+  width:9rem;height:2.25rem;
+  /* ATIVO REAL: logo Nelogica */
+}
+@media (min-width:760px){
+  .disclaimer-inner{grid-template-columns:1fr auto}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   REVEAL — movimento contido, discreto, aplicado uma vez
+   ═══════════════════════════════════════════════════════════════ */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+.reveal.is-visible{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Pular para o conteúdo</a>
+
+<!-- ═══ BARRA FIXA DE TOPO ═══ -->
+<header class="topbar" role="banner">
+  <div class="container topbar-inner">
+    <div class="countdown mono" role="timer" aria-label="Contagem regressiva para a live de lançamento do KERBEROS, dia 11 de agosto às 19h">
+      <span class="topbar-label mono">Live em</span>
+      <span class="unit"><span class="val" id="cd-days">00</span><span class="lbl">Dias</span></span>
+      <span class="sep">:</span>
+      <span class="unit"><span class="val" id="cd-hours">00</span><span class="lbl">Horas</span></span>
+      <span class="sep">:</span>
+      <span class="unit"><span class="val" id="cd-min">00</span><span class="lbl">Min</span></span>
+      <span class="sep">:</span>
+      <span class="unit"><span class="val" id="cd-sec">00</span><span class="lbl">Seg</span></span>
+    </div>
+    <a class="btn" href="#hero-form">Quero minha vaga</a>
+  </div>
+</header>
+
+<main id="main-content">
+
+<!-- ═══ 1ª DOBRA — HERO ═══ -->
+<section class="hero texture bg-basalto" aria-labelledby="hero-title">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <span class="kicker section-kicker">Lançamento · O novo indicador de Edgard Matos, campeão da Profit League</span>
+      <h1 id="hero-title" class="h-xl">O trader não perde por <em>entrar errado</em>.<br>Perde por entrar <em>tarde</em>.</h1>
+      <p class="hero-sub">O KERBEROS só imprime o sinal quando análise técnica, correlação entre mercados e fluxo institucional validam o mesmo lado. Conheça na live de lançamento, dia 11/08, às 19h.</p>
+
+      <!-- ATIVO REAL: mockup do Profit com o KERBEROS plotado, mostrando a virada de coloração no início de um movimento em WIN -->
+      <div class="hero-media asset-slot" role="img" aria-label="Mockup do gráfico do Profit com o indicador KERBEROS plotado, exibindo a virada de coloração do sinal no início de um movimento em WIN">
+        IMAGEM — Profit + KERBEROS plotado<br>(virada de coloração, WIN)
+      </div>
+    </div>
+
+    <div class="hero-form-wrap reveal" id="hero-form">
+      <h2>Garanta sua vaga na live</h2>
+      <p class="form-note">Gratuito. Vagas limitadas no primeiro lote.</p>
+      <form id="lead-form" novalidate>
+        <div class="field">
+          <label for="f-name">Nome completo</label>
+          <input type="text" id="f-name" name="name" autocomplete="name" required aria-required="true">
+        </div>
+        <div class="field">
+          <label for="f-email">E-mail</label>
+          <input type="email" id="f-email" name="email" autocomplete="email" required aria-required="true">
+        </div>
+        <div class="field">
+          <label for="f-whats">WhatsApp</label>
+          <input type="tel" id="f-whats" name="whatsapp" autocomplete="tel" required aria-required="true">
+        </div>
+        <button type="submit" class="btn" style="width:100%;justify-content:center">Quero minha vaga no lançamento</button>
+        <p class="form-microcopy">Gratuito. Vagas limitadas no primeiro lote.</p>
+      </form>
+
+      <ul class="check-list">
+        <li><span class="mark-check" aria-hidden="true"></span>Prioridade no primeiro lote</li>
+        <li><span class="mark-check" aria-hidden="true"></span>Acesso à comunidade fechada do lançamento</li>
+        <li><span class="mark-check" aria-hidden="true"></span>O indicador operando ao vivo, no gráfico, com o Edgard</li>
+      </ul>
+
+      <!-- elemento dinâmico: contador de inscritos, simulado a partir de 500 até dado real de backend -->
+      <p class="subscriber-count"><strong id="subscriber-count">500</strong> traders já garantiram a vaga.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 2ª DOBRA — O PROBLEMA ═══ -->
+<section class="texture bg-grafite" aria-labelledby="problem-title">
+  <div class="container problem-grid">
+    <div class="problem-copy reveal">
+      <span class="kicker section-kicker">O custo da hesitação</span>
+      <h2 id="problem-title" class="h-lg">Quanto mais confirmação você espera, mais tarde você entra.</h2>
+      <p>Depois de uma sequência de stops, o trader para de entrar no sinal e passa a esperar confirmação. Só que a confirmação que o mercado dá é o movimento já acontecendo. Quando você aperta a tecla, o preço já andou, o stop ficou longe e o risco dobrou.</p>
+      <p class="pull-quote">Confirmação que chega depois do movimento não é confirmação. É atraso.</p>
+      <div class="cta-row">
+        <a class="btn" href="#hero-form">Quero entrar antes da confirmação</a>
+      </div>
+    </div>
+    <!-- ATIVO REAL: o mesmo movimento em duas camadas — entrada no sinal do KERBEROS vs. entrada depois da confirmação, com distância do stop destacada em ambas -->
+    <div class="asset-slot reveal" role="img" aria-label="Comparação em duas camadas do mesmo movimento de mercado: entrada no sinal do KERBEROS versus entrada após confirmação manual, com a distância do stop destacada nas duas situações">
+      IMAGEM — Comparativo de entrada<br>(sinal KERBEROS × confirmação tardia)
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 3ª DOBRA — MECANISMO (TRIPLA AUTENTICAÇÃO) ═══ -->
+<section class="texture bg-basalto" aria-labelledby="mechanism-title">
+  <div class="container">
+    <div class="mechanism-head reveal">
+      <span class="kicker section-kicker">O mecanismo</span>
+      <h2 id="mechanism-title" class="h-lg">Três leituras precisam validar o mesmo lado antes de a cor aparecer.</h2>
+      <p>Três leituras independentes rodam por trás do gráfico e o sinal só é impresso quando as três validam a mesma direção. Quando a cor chega até você, ela já passou por todas.</p>
+    </div>
+
+    <!-- mecânica-assinatura: três moedas convergem conforme o scroll até o sinal ser validado -->
+    <div class="coin-stage-wrap" id="coin-stage-wrap">
+      <div class="coin-stage" id="coin-stage" aria-hidden="true">
+        <div class="coin-field" id="coin-field">
+          <div class="coin" data-coin="tecnica">
+            <img src="assets/images/moeda-analise-tecnica.webp" alt="" width="480" height="480" loading="eager">
+            <span class="coin-tag">Técnica</span>
+          </div>
+          <div class="coin" data-coin="correlacao">
+            <img src="assets/images/moeda-correlacao.webp" alt="" width="480" height="480" loading="eager">
+            <span class="coin-tag">Correlação</span>
+          </div>
+          <div class="coin" data-coin="fluxo">
+            <img src="assets/images/moeda-fluxo-institucional.webp" alt="" width="480" height="480" loading="eager">
+            <span class="coin-tag">Fluxo</span>
+          </div>
+          <div class="signal-chart">
+            <div class="signal-line"></div>
+            <span class="signal-caption">Sinal validado</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="visually-hidden" id="mechanism-desc">Ilustração animada: três moedas representando análise técnica, correlação entre mercados e fluxo institucional se movem em direção ao centro do gráfico conforme a página é rolada. Quando as três se alinham, a linha do gráfico muda de cor, representando a validação do sinal.</p>
+
+    <!-- ATIVO REAL: esquema estático das três leituras convergindo para uma coloração no gráfico do Profit -->
+    <div class="mechanism-image asset-slot reveal" role="img" aria-label="Esquema das três leituras — técnica, correlação e fluxo institucional — convergindo para uma coloração de sinal no gráfico do Profit">
+      IMAGEM — Esquema das três leituras convergindo no gráfico
+    </div>
+
+    <!-- sticky stack: cards empilham um de cada vez conforme o scroll -->
+    <div class="stack">
+      <article class="stack-card">
+        <span class="eyebrow-num mono">01</span>
+        <h3>Análise técnica</h3>
+        <p><strong>Saiba o que o preço está fazendo agora.</strong> A leitura do gráfico, a base de qualquer decisão técnica.</p>
+      </article>
+      <article class="stack-card">
+        <span class="eyebrow-num mono">02</span>
+        <h3>Correlação entre mercados</h3>
+        <p><strong>Saiba se o resto do mercado sustenta o movimento.</strong> A leitura do contexto entre ativos, não só do ativo isolado na sua tela.</p>
+      </article>
+      <article class="stack-card">
+        <span class="eyebrow-num mono">03</span>
+        <h3>Fluxo institucional</h3>
+        <p><strong>Saiba quem está posicionado do outro lado do seu trade.</strong> A leitura de posicionamento e agressão, o dado que o gráfico sozinho não mostra.</p>
+      </article>
+      <article class="stack-card">
+        <span class="eyebrow-num mono">→</span>
+        <h3>O que sobra pra você</h3>
+        <p><strong>Uma cor. Um clique na boleta.</strong> As três leituras rodam escondidas. Na sua tela aparece só a coloração de compra e venda, e você instala e opera como qualquer indicador do Profit.</p>
+      </article>
+    </div>
+
+    <div class="cta-row">
+      <a class="btn" href="#hero-form">Quero ver as três leituras ao vivo</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 4ª DOBRA — DIFERENCIAÇÃO ═══ -->
+<section class="texture bg-grafite" aria-labelledby="diff-title">
+  <div class="container">
+    <div class="diff-head reveal">
+      <span class="kicker section-kicker">Confluência real, não coincidência</span>
+      <h2 id="diff-title" class="h-lg">Três indicadores de tendência na tela não são confirmação. São eco.</h2>
+      <p>Indicadores da mesma família leem o mesmo dado e repetem a mesma leitura três vezes. Isso não valida nada. O KERBEROS cruza três naturezas diferentes de leitura, que respondem a três perguntas diferentes.</p>
+    </div>
+
+    <div class="compare reveal">
+      <div class="compare-card muted">
+        <h3>Confluência de fachada</h3>
+        <ul>
+          <li>Três indicadores da mesma categoria</li>
+          <li>Leem o mesmo dado</li>
+          <li>Repetem a mesma leitura</li>
+          <li>Tela cheia, decisão vazia</li>
+        </ul>
+      </div>
+      <div class="compare-card hero-card clip-corner">
+        <h3>Tripla Autenticação · KERBEROS</h3>
+        <ul>
+          <li>Três naturezas distintas de leitura</li>
+          <li>Respondem a três perguntas diferentes</li>
+          <li>Validam a mesma direção</li>
+          <li>Tela limpa, uma coloração</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="pull-quote center">Confluência real. Não coincidência.</p>
+
+    <div class="cta-row">
+      <a class="btn" href="#hero-form">Quero ver a diferença na prática</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 5ª DOBRA — AUTORIDADE ═══ -->
+<section class="texture bg-ocre" aria-labelledby="authority-title">
+  <div class="container authority-grid">
+    <div class="authority-photo reveal">
+      <img src="assets/images/edgard-matos.webp" alt="Edgard Matos, criador do KERBEROS, sorrindo de braços cruzados" width="900" height="1248" loading="lazy">
+    </div>
+    <div class="authority-copy reveal">
+      <span class="kicker section-kicker">Quem constrói o KERBEROS</span>
+      <h2 id="authority-title" class="h-lg">Quem construiu o KERBEROS já lia correlação e fluxo institucional antes de existir um indicador pra isso.</h2>
+      <p>Edgard Matos é engenheiro, programador e trader profissional há mais de 10 anos. São mais de 35 anos em tecnologia, com passagens por Ford e Totvs, sócio-fundador da Deway e pós-graduando em machine learning e inteligência artificial. É campeão da Profit League, competição nacional de robôs em conta real homologada pela Nelogica, e criador do VolaX Pro, do Absurdo Market Vision, do Indicador 039 e do NTSL Factory. À frente do canal Trade e Ações, com mais de 40 mil seguidores, é a maior referência do Brasil em programação para o Profit. Ele já fazia a leitura de correlação e de fluxo em ferramenta separada, fora do gráfico. O KERBEROS é essa leitura acontecendo dentro do Profit e devolvida em uma coloração simples.</p>
+
+      <ul class="seal-row" aria-label="Credenciais de Edgard Matos">
+        <li class="seal">Campeão da Profit League</li>
+        <li class="seal">Criador do VolaX Pro</li>
+        <li class="seal">+40 mil seguidores no Trade e Ações</li>
+        <li class="seal">+10 anos de trading profissional</li>
+        <li class="seal">Palestrante Autotrade Summit e Profit Tour</li>
+      </ul>
+
+      <div class="cta-row">
+        <a class="btn" href="#hero-form">Quero ver o Edgard ao vivo dia 11/08</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 6ª DOBRA — PROVA DE RESULTADO ═══ -->
+<section class="texture bg-basalto" aria-labelledby="proof-title">
+  <div class="container">
+    <div class="proof-top reveal">
+      <!-- ATIVO REAL: numeral fundido em bronze (objeto/imagem) substituindo o texto abaixo -->
+      <div class="bronze-num" aria-hidden="true">72<sup>%</sup></div>
+      <div class="proof-copy">
+        <span class="kicker section-kicker">O filtro em número</span>
+        <h2 id="proof-title" class="h-md">72% dos sinais passaram nas três leituras. O resto nem apareceu no gráfico.</h2>
+        <p>
+          <!-- ATIVO REAL: metodologia do backtest — ativo, período testado, tempo gráfico, critério de entrada e saída -->
+          Backtest realizado em WIN e WDO, período de [inserir período], tempo gráfico de [inserir tempo], critério de entrada no início da coloração de sinal e saída em [inserir critério de saída].
+        </p>
+        <p>O número não é promessa de acerto: é o resultado do filtro. Só vira sinal o que análise técnica, correlação entre mercados e fluxo institucional validam ao mesmo tempo. O KERBEROS foi construído do zero pelo Edgard e está sendo operado por ele antes de chegar ao mercado.</p>
+        <p class="methodology-note">Resultados passados não garantem resultados futuros. Consulte a metodologia completa do backtest na live de lançamento.</p>
+      </div>
+    </div>
+
+    <!-- ATIVO REAL: mosaico assimétrico de prints do KERBEROS plotado no Profit, WIN e WDO, tempos gráficos diferentes -->
+    <div class="proof-mosaic reveal">
+      <div class="asset-slot" role="img" aria-label="Print do KERBEROS plotado no Profit em WIN, com coloração de sinal visível">IMAGEM — KERBEROS no WIN</div>
+      <div class="asset-slot" role="img" aria-label="Print do KERBEROS plotado no Profit em WDO">IMAGEM — KERBEROS no WDO</div>
+      <div class="asset-slot" role="img" aria-label="Print do KERBEROS em tempo gráfico diferente, coloração de sinal visível">IMAGEM — outro tempo gráfico</div>
+    </div>
+    <p class="proof-caption">Veja o KERBEROS operando na prática durante a live de lançamento.</p>
+
+    <div class="cta-row">
+      <a class="btn" href="#hero-form">Quero ver o KERBEROS na live de lançamento</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 7ª DOBRA — COMBO COMPLETO ═══ -->
+<section class="texture bg-ocre combo" aria-labelledby="combo-title">
+  <div class="container">
+    <span class="kicker section-kicker">O que vem junto</span>
+    <h2 id="combo-title" class="h-lg reveal">Você leva mais do que um indicador.</h2>
+
+    <ol class="combo-list reveal">
+      <li class="combo-item"><span><span class="idx mono">01</span> Indicador KERBEROS</span></li>
+      <li class="combo-item"><span><span class="idx mono">02</span> VolaX Pro</span><span class="desc">Robô campeão da Profit League, desenvolvido pelo Edgard Matos</span></li>
+      <li class="combo-item"><span><span class="idx mono">03</span> Curso do Indicador</span><span class="desc">Na Invest Academy</span></li>
+      <li class="combo-item"><span><span class="idx mono">04</span> Suporte Nelogica</span></li>
+    </ol>
+
+    <div class="cta-row">
+      <a class="btn" href="#hero-form">Ver tudo que está incluído</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 8ª DOBRA — É PARA VOCÊ QUE ═══ -->
+<section class="texture bg-salvia audience" aria-labelledby="audience-title">
+  <div class="container">
+    <span class="kicker section-kicker">Isso é pra você?</span>
+    <h2 id="audience-title" class="h-lg reveal">É para você que:</h2>
+
+    <ul class="audience-list reveal">
+      <li><span class="mark-dot" aria-hidden="true"></span>Cansou de sinal falso e de indicador que acerta sozinho e erra sozinho</li>
+      <li><span class="mark-dot" aria-hidden="true"></span>Já tentou montar confluência na mão e só conseguiu encher a tela de ruído</li>
+      <li><span class="mark-dot" aria-hidden="true"></span>Trava na hora de puxar o gatilho depois de uma sequência de stops</li>
+      <li><span class="mark-dot" aria-hidden="true"></span>Opera WIN, WDO, ações ou cripto no Profit e quer uma leitura só, já filtrada</li>
+      <li><span class="mark-dot" aria-hidden="true"></span>Quer executar sem deliberar no calor do gráfico</li>
+    </ul>
+
+    <div class="cta-row">
+      <a class="btn" href="#hero-form">Garantir minha vaga no lançamento</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 9ª DOBRA — FAQ ═══ -->
+<section class="texture bg-grafite faq" aria-labelledby="faq-title">
+  <div class="container">
+    <span class="kicker section-kicker">Perguntas frequentes</span>
+    <h2 id="faq-title" class="h-lg reveal">Antes de perguntar, leia isso.</h2>
+
+    <div class="faq-list reveal">
+      <details class="faq-item">
+        <summary>O que o KERBEROS faz de diferente de outros indicadores de compra e venda?<span class="mark-expand" aria-hidden="true"></span></summary>
+        <div class="faq-a">O KERBEROS só imprime sinal quando três leituras independentes — análise técnica, correlação entre mercados e fluxo institucional — validam o mesmo lado ao mesmo tempo. A maioria dos indicadores de compra e venda usa uma única natureza de leitura.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Por que três leituras diferentes e não três indicadores na tela?<span class="mark-expand" aria-hidden="true"></span></summary>
+        <div class="faq-a">Três indicadores da mesma família leem o mesmo dado e repetem a mesma leitura. O KERBEROS cruza naturezas distintas de leitura, que respondem perguntas diferentes — isso é confluência real, não repetição.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Preciso entender de fluxo ou de correlação para usar?<span class="mark-expand" aria-hidden="true"></span></summary>
+        <div class="faq-a">Não. As três leituras rodam escondidas. Na sua tela aparece só a coloração de compra e venda — você opera como opera qualquer indicador do Profit.</div>
+      </details>
+      <details class="faq-item">
+        <summary>O indicador é novo. Ele tem histórico?<span class="mark-expand" aria-hidden="true"></span></summary>
+        <div class="faq-a">O KERBEROS foi construído do zero pelo Edgard Matos e está sendo operado por ele antes de chegar ao mercado. Os resultados do backtest e a metodologia completa são apresentados na live de lançamento.</div>
+      </details>
+      <details class="faq-item">
+        <summary>O KERBEROS funciona em todas as versões do Profit?<span class="mark-expand" aria-hidden="true"></span></summary>
+        <div class="faq-a"><!-- ATIVO REAL: confirmar compatibilidade exata de versões do Profit --> Compatibilidade detalhada por versão do Profit é apresentada na live de lançamento e no material de instalação.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Posso utilizar no BlackArrow?<span class="mark-expand" aria-hidden="true"></span></summary>
+        <div class="faq-a"><!-- ATIVO REAL: confirmar compatibilidade com BlackArrow --> Essa informação é confirmada na live de lançamento, junto dos requisitos técnicos de instalação.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Em quais ativos e tempos gráficos o indicador funciona?<span class="mark-expand" aria-hidden="true"></span></summary>
+        <div class="faq-a">O KERBEROS foi testado em WIN e WDO, também opera em ações e cripto negociados no Profit. Os tempos gráficos recomendados são detalhados na live.</div>
+      </details>
+      <details class="faq-item">
+        <summary>O que está incluído no combo completo?<span class="mark-expand" aria-hidden="true"></span></summary>
+        <div class="faq-a">Indicador KERBEROS, VolaX Pro (robô campeão da Profit League), curso do indicador na Invest Academy e suporte Nelogica.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Receberei suporte para instalação e configuração?<span class="mark-expand" aria-hidden="true"></span></summary>
+        <div class="faq-a">Sim. O combo inclui suporte Nelogica, além de material de instalação e configuração compartilhado na comunidade fechada.</div>
+      </details>
+      <details class="faq-item">
+        <summary>A live é gratuita? Preciso comprar algo para participar?<span class="mark-expand" aria-hidden="true"></span></summary>
+        <div class="faq-a">A live é 100% gratuita. Basta garantir sua vaga no formulário desta página — as vagas do primeiro lote são limitadas.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Como recebo o acesso à live? Vou poder assistir à gravação?<span class="mark-expand" aria-hidden="true"></span></summary>
+        <div class="faq-a">Ao se inscrever, você entra na comunidade fechada do lançamento, onde o link da transmissão é liberado. <!-- ATIVO REAL: confirmar política de gravação/replay --></div>
+      </details>
+    </div>
+
+    <div class="cta-row">
+      <a class="btn" href="#hero-form">Quero conhecer o KERBEROS</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 10ª DOBRA — FECHAMENTO ═══ -->
+<section class="texture bg-basalto closing" aria-labelledby="closing-title" style="--noise-opacity:.09">
+  <div class="container">
+    <h2 id="closing-title" class="closing-title reveal">
+      <span>O gráfico mostra.</span>
+      <span>A correlação confirma.</span>
+      <span>O fluxo autentica.</span>
+      <span style="color:var(--ocre)">Você só executa.</span>
+    </h2>
+    <p class="reveal">Dia 11/08, às 19h, Edgard Matos apresenta o KERBEROS ao mercado pela primeira vez. Quem está na comunidade tem prioridade no primeiro lote.</p>
+    <div class="cta-row reveal">
+      <a class="btn" href="#hero-form">Quero minha vaga na live</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ═══ DISCLAIMER LEGAL + RODAPÉ ═══ -->
+<footer class="disclaimer bg-basalto texture" role="contentinfo">
+  <div class="container disclaimer-inner">
+    <p>A Nelogica é uma provedora de serviços de tecnologia para o mercado financeiro e não é uma corretora de valores, não realiza recomendações de investimento e não se responsabiliza pelas decisões de compra e venda tomadas pelo usuário. O KERBEROS é uma ferramenta de apoio à análise técnica, desenvolvida por terceiros, e seu uso não garante resultados financeiros. Operações no mercado financeiro envolvem riscos e podem resultar em perdas superiores ao capital investido.</p>
+    <!-- ATIVO REAL: logo Nelogica -->
+    <div class="nelogica-logo asset-slot" style="min-height:auto;padding:.6rem" role="img" aria-label="Logo Nelogica">NELOGICA</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ═══ COUNTDOWN — live 11/08/2026, 19h (GMT-3) ═══ */
+  var TARGET = new Date('2026-08-11T19:00:00-03:00').getTime();
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+
+  function tickCountdowns(){
+    var now = Date.now();
+    var diff = Math.max(0, TARGET - now);
+
+    var days = Math.floor(diff / 86400000);
+    var hours = Math.floor((diff % 86400000) / 3600000);
+    var mins = Math.floor((diff % 3600000) / 60000);
+    var secs = Math.floor((diff % 60000) / 1000);
+
+    var map = {
+      'cd-days': days, 'cd-hours': hours, 'cd-min': mins, 'cd-sec': secs
+    };
+    Object.keys(map).forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.textContent = pad(map[id]);
+    });
+  }
+  tickCountdowns();
+  setInterval(tickCountdowns, 1000);
+
+  /* ═══ CONTADOR DE INSCRITOS — simulado a partir de 500 ═══
+     ATIVO REAL: substituir por valor vindo do backend/CRM de inscrições. */
+  var subEl = document.getElementById('subscriber-count');
+  if (subEl){
+    var base = 500;
+    var current = base + Math.floor(Math.random() * 40);
+    subEl.textContent = current;
+    setInterval(function(){
+      current += Math.random() > 0.6 ? 1 : 0;
+      subEl.textContent = current;
+    }, 9000);
+  }
+
+  /* ═══ FORMULÁRIO — placeholder de envio ═══
+     ATIVO REAL: substituir por integração real (CRM / webhook / API). */
+  var form = document.getElementById('lead-form');
+  if (form){
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      window.location.href = 'obrigado.html';
+    });
+  }
+
+  /* ═══ REVEAL ON SCROLL — movimento contido, uma vez por elemento ═══ */
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window && !reduceMotion){
+    var revealObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){
+          entry.target.classList.add('is-visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.18 });
+    revealEls.forEach(function(el){ revealObserver.observe(el); });
+  } else {
+    revealEls.forEach(function(el){ el.classList.add('is-visible'); });
+  }
+
+  /* ═══ MECÂNICA-ASSINATURA — convergência das três moedas ═══
+     Ligada ao progresso de scroll dentro do wrapper de 250vh.
+     Funciona em desktop e mobile pois depende apenas da posição de scroll. */
+  var wrap = document.getElementById('coin-stage-wrap');
+  var stage = document.getElementById('coin-stage');
+  var field = document.getElementById('coin-field');
+  if (wrap && stage && field){
+    var coinTecnica = field.querySelector('[data-coin="tecnica"]');
+    var coinCorrelacao = field.querySelector('[data-coin="correlacao"]');
+    var coinFluxo = field.querySelector('[data-coin="fluxo"]');
+    var raf = null;
+    var listening = false;
+
+    function render(){
+      raf = null;
+      var rect = wrap.getBoundingClientRect();
+      var vh = window.innerHeight;
+      var total = rect.height - vh;
+      var progress = total > 0 ? (0 - rect.top) / total : 0;
+      progress = Math.max(0, Math.min(1, progress));
+
+      /* convergência: 0 → posição dispersa · 1 → alinhadas ao centro */
+      var ease = progress < 0.5
+        ? 2 * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 2) / 2; /* easeInOutQuad */
+
+      var travel = ease * 38; /* % de deslocamento em direção ao centro */
+      if (reduceMotion){
+        coinTecnica.style.transform = 'translate(0,0) scale(0.86)';
+        coinCorrelacao.style.transform = 'translate(0,0) scale(0.86)';
+        coinFluxo.style.transform = 'translate(-50%,0) scale(0.86)';
+      } else {
+        coinTecnica.style.transform = 'translate(' + travel + '%,' + travel + '%) scale(' + (1 - ease*0.14) + ')';
+        coinCorrelacao.style.transform = 'translate(-' + travel + '%,' + travel + '%) scale(' + (1 - ease*0.14) + ')';
+        coinFluxo.style.transform = 'translate(-50%,-' + (travel*1.15) + '%) scale(' + (1 - ease*0.14) + ')';
+      }
+
+      stage.classList.toggle('signal-active', progress > 0.82);
+    }
+
+    function requestRender(){
+      if (raf === null) raf = requestAnimationFrame(render);
+    }
+
+    function startListening(){
+      if (listening) return;
+      listening = true;
+      window.addEventListener('scroll', requestRender, { passive: true });
+      requestRender();
+    }
+    function stopListening(){
+      if (!listening) return;
+      listening = false;
+      window.removeEventListener('scroll', requestRender);
+    }
+
+    if ('IntersectionObserver' in window){
+      var stageObserver = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if (entry.isIntersecting) startListening(); else stopListening();
+        });
+      }, { threshold: 0 });
+      stageObserver.observe(wrap);
+    } else {
+      startListening();
+    }
+  }
+
+})();
+</script>
+</body>
+</html>
