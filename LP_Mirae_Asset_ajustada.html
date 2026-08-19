@@ -796,6 +796,8 @@ document.querySelectorAll('.cta').forEach(function(btn){
     var u=el.getAttribute('data-u');
     (groups[u]=groups[u]||[]).push(el);
   });
+  var reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hasGsap=typeof gsap!=='undefined';
   function pad(n){return n<10?'0'+n:''+n;}
   function tick(){
     if(done)return;
@@ -817,9 +819,14 @@ document.querySelectorAll('.cta').forEach(function(btn){
         var num=el.querySelector('.cd-num')||el;
         if(num.textContent===str)return;
         num.textContent=str;
-        el.classList.remove('tick');
-        void el.offsetWidth;
-        el.classList.add('tick');
+        if(hasGsap&&!reduceMotion){
+          /* troca do dígito com easing do GSAP — desliza e funde suavemente, em vez do corte seco do CSS */
+          gsap.fromTo(num,{yPercent:-45,opacity:0},{yPercent:0,opacity:1,duration:.4,ease:'power2.out',overwrite:'auto'});
+        }else{
+          el.classList.remove('tick');
+          void el.offsetWidth;
+          el.classList.add('tick');
+        }
       });
     });
   }
@@ -900,16 +907,18 @@ document.querySelectorAll('.cta').forEach(function(btn){
     gsap.to(swoosh,{strokeDashoffset:0,duration:1.6,ease:'power2.inOut',delay:.2,stagger:.15});
   }
 
-  /* entrada do hero em timeline: kicker → título → badge → texto → spoiler → formulário → foto */
-  gsap.timeline({defaults:{ease:'power2.out',duration:.9}})
-    .from('.hero-inner .kicker',{opacity:0,y:16})
-    .from('.hero-inner h1',{opacity:0,y:22},'-=.55')
-    .from('.hero-inner .date-badge',{opacity:0,y:16},'-=.55')
-    .from('.hero-inner .lede',{opacity:0,y:16},'-=.6')
-    .from('.spoiler > div',{opacity:0,y:20,stagger:.12},'-=.5')
-    .from('.hero-inner .form-title',{opacity:0,y:14},'-=.35')
-    .from('#form-top .field, #form-top .cta, #form-top .micro',{opacity:0,y:14,stagger:.08},'-=.4')
-    .from('.hero-photo',{opacity:0,x:26,duration:1.1},'-=1');
+  /* entrada do hero em timeline: kicker → título → badge → texto → spoiler → formulário → foto
+     tempos reduzidos (duration .55 + overlaps maiores) pra hero assentar rápido — o H1 já
+     termina por volta de .7s, em vez de 1.25s da versão anterior */
+  gsap.timeline({defaults:{ease:'power2.out',duration:.55}})
+    .from('.hero-inner .kicker',{opacity:0,y:12})
+    .from('.hero-inner h1',{opacity:0,y:18},'-=.4')
+    .from('.hero-inner .date-badge',{opacity:0,y:12},'-=.38')
+    .from('.hero-inner .lede',{opacity:0,y:12},'-=.4')
+    .from('.spoiler > div',{opacity:0,y:16,stagger:.08},'-=.32')
+    .from('.hero-inner .form-title',{opacity:0,y:10},'-=.28')
+    .from('#form-top .field, #form-top .cta, #form-top .micro',{opacity:0,y:10,stagger:.05},'-=.3')
+    .from('.hero-photo',{opacity:0,x:20,duration:.75},'-=.65');
 })();
 </script>
 </body>
