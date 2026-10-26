@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Os 4 Tempos do Mercado · Manual de marca</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400&family=Inter:wght@400&family=Syne:wght@700&display=swap" rel="stylesheet">
+<style>
+/* Tokens: nomes e valores da coleção do Figma (Primitivos, Cor, Forma e Espaço, Tipografia) */
+:root{
+  --brand-papel:#F4F3EF; --brand-pedra:#E5E3DC; --brand-tinta:#141619;
+  --brand-laranja:#DF4A29; --brand-laranja-sombra:#CD4527; --brand-laranja-hover:#CF4020;
+  --brand-laranja-ativo:#BC391C; --brand-laranja-texto:#B63518; --brand-laranja-claro:#E4583A;
+  --neutro-50:#F4F3EF; --neutro-100:#E5E3DC; --neutro-150:#D8D6CF; --neutro-200:#C9C7C1;
+  --neutro-300:#ADABA5; --neutro-400:#8E8C87; --neutro-500:#74736F; --neutro-600:#5E6064;
+  --neutro-700:#45484C; --neutro-800:#2E3034; --neutro-900:#1E2124; --neutro-950:#141619;
+  --sinal-compra:#03A14A; --sinal-compra-claro:#7CD591; --sinal-venda:#D02940; --sinal-venda-claro:#F49191;
+  --sinal-saida:#F3C530; --sinal-saida-roxo:#7544CD; --sinal-neutro:#ADABA5;
+  --feedback-success:#03A14A; --feedback-success-texto:#197037; --feedback-danger:#D02940; --feedback-danger-texto:#BE2038;
+  --space-1:8px; --space-2:16px; --space-3:24px; --space-4:32px; --space-6:48px; --space-8:64px; --space-12:96px;
+  --radius-sm:8px; --radius-md:16px; --radius-card:24px; --radius-midia:32px; --radius-capsula:999px;
+  --borda-fina:1px;
+  --font-titulo:"Syne",sans-serif; --font-corpo:"Inter",sans-serif; --font-mono:"DM Mono",monospace;
+  --leading-display:1.06; --leading-tight:1.15; --leading-snug:1.3; --leading-normal:1.5;
+  /* modo Papel da coleção Cor */
+  --color-surface:var(--brand-papel); --color-on-surface:var(--brand-tinta); --color-texto-corpo:var(--neutro-700);
+  --color-muted:var(--neutro-600); --color-border:var(--neutro-200); --color-fio-rotulo:var(--brand-tinta);
+  /* grid do slide (ver referencias/03) */
+  --col:100px; --gut:48px; --row:202px; --mx:96px; --my:64px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#0b0c0d;height:100%;overflow:hidden}
+body{font-family:var(--font-corpo);color:var(--color-on-surface)}
+.deck{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0}
+.slide{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;display:none;
+  background:var(--color-surface);color:var(--color-on-surface);
+  padding:var(--my) var(--mx);
+  grid-template-columns:repeat(12,var(--col));grid-template-rows:repeat(4,var(--row));
+  column-gap:var(--gut);row-gap:var(--gut)}
+.slide.ativo{display:grid}
+/* modo Tinta */
+.tinta{--color-surface:var(--brand-tinta);--color-on-surface:var(--brand-papel);--color-texto-corpo:var(--neutro-150);
+  --color-muted:var(--neutro-300);--color-border:var(--neutro-700);--color-fio-rotulo:var(--brand-papel)}
+/* sobreposição do grid (tecla G) */
+.grid-ov{position:absolute;inset:0;pointer-events:none;display:none;z-index:50}
+body.mostra-grid .grid-ov{display:block}
+.grid-ov .cols,.grid-ov .rows{position:absolute;left:var(--mx);right:var(--mx);top:var(--my);bottom:var(--my);display:grid;gap:var(--gut)}
+.grid-ov .cols{grid-template-columns:repeat(12,var(--col))}
+.grid-ov .cols i{background:rgba(223,74,41,.12);border-left:1px solid rgba(223,74,41,.5);border-right:1px solid rgba(223,74,41,.5)}
+.grid-ov .rows{grid-template-rows:repeat(4,var(--row))}
+.grid-ov .rows i{border-top:1px dashed rgba(117,68,205,.7);border-bottom:1px dashed rgba(117,68,205,.7)}
+.grid-ov .margem{position:absolute;inset:var(--my) var(--mx);outline:2px solid rgba(117,68,205,.8)}
+
+/* cabeçalho: rótulo sobre fio (A2) + título */
+.cab{grid-column:1/-1;grid-row:1;display:flex;flex-direction:column;gap:var(--space-3)}
+.fio{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--font-mono);font-size:20px;
+  line-height:var(--leading-snug);padding-bottom:var(--space-1);border-bottom:var(--borda-fina) solid var(--color-fio-rotulo)}
+.fio.laranja{border-bottom-color:var(--brand-laranja)}
+h1,h2,h3{font-family:var(--font-titulo);font-weight:700}
+h2{font-size:61.04px;line-height:var(--leading-tight);letter-spacing:-.01em;max-width:1580px}
+h3{font-size:31.25px;line-height:var(--leading-tight)}
+.lead{font-size:31.25px;line-height:var(--leading-snug);color:var(--color-texto-corpo)}
+p,li{font-size:25px;line-height:var(--leading-normal);color:var(--color-texto-corpo)}
+.mono{font-family:var(--font-mono)}
+p .mono{white-space:nowrap}
+.leg{font-family:var(--font-mono);font-size:16px;line-height:var(--leading-snug);color:var(--color-muted)}
+.stack{display:flex;flex-direction:column;gap:var(--space-3)}
+.stack-2{display:flex;flex-direction:column;gap:var(--space-2)}
+.fichas .fio{font-size:20px}
+.fichas .fio span:last-child{text-align:right}
+img{display:block}
+.fig{width:100%;height:auto}
+.box{border-radius:var(--radius-card);overflow:hidden}
+.marcador{display:inline-block;width:8px;height:20px;border-radius:var(--radius-capsula);background:var(--brand-laranja);vertical-align:-2px;margin-right:12px}
+
+/* capa */
+.faixas{display:flex;flex-direction:column;align-items:flex-start;gap:7.7px}
+.faixas span{background:var(--brand-laranja);color:var(--brand-papel);font-family:var(--font-titulo);font-weight:700;
+  font-size:46px;line-height:1.15;letter-spacing:-.005em;padding:5px 16px 8px}
+.display{font-size:120px;line-height:var(--leading-display);letter-spacing:-.018em}
+
+/* regras numeradas */
+.regras{display:grid;grid-template-columns:repeat(2,840px);column-gap:var(--gut);row-gap:var(--space-6)}
+.regra{display:grid;grid-template-columns:100px 692px;column-gap:var(--gut)}
+.regra .n{font-family:var(--font-mono);font-size:48.83px;line-height:1;color:var(--brand-laranja)}
+.regra h3{margin-bottom:var(--space-2)}
+
+/* tabelas de token */
+table{border-collapse:collapse;width:100%}
+td,th{text-align:left;vertical-align:middle;border-bottom:var(--borda-fina) solid var(--color-border);padding:0 var(--space-3) 0 0;height:56px}
+th{font-family:var(--font-mono);font-weight:400;font-size:16px;color:var(--color-muted);height:40px;border-bottom-color:var(--color-fio-rotulo)}
+td{font-size:20px;color:var(--color-texto-corpo)}
+td.mono{font-size:20px;color:var(--color-on-surface)}
+.sw{width:48px;height:32px;border-radius:var(--radius-sm);border:1px solid rgba(20,22,25,.12)}
+table.compacta td{height:40px}table.compacta th{height:32px}
+.tabela-tempos td{height:auto;padding:var(--space-2) var(--space-3) var(--space-2) 0}
+
+/* swatches */
+.swrow{display:grid;gap:var(--space-2)}
+.swc .amostra{height:96px;border-radius:var(--radius-md);border:1px solid rgba(20,22,25,.12)}
+.swc .nome{font-family:var(--font-mono);font-size:16px;line-height:1.3;margin-top:var(--space-1);color:var(--color-on-surface)}
+.swc .hex{font-family:var(--font-mono);font-size:16px;line-height:1.3;color:var(--color-muted)}
+.swc .papel{font-size:16px;line-height:1.4;color:var(--color-texto-corpo);margin-top:4px}
+
+/* logos */
+.painel{border-radius:var(--radius-card);display:flex;align-items:center;justify-content:center}
+.painel img{width:78%;height:auto}
+
+/* tipografia */
+.esp-tipo{display:grid;grid-template-columns:repeat(3,544px);column-gap:var(--gut)}
+.esp-tipo .ab{font-size:120px;line-height:1;margin:var(--space-2) 0 var(--space-3)}
+
+/* espaço */
+.barra{height:24px;background:var(--brand-laranja);border-radius:var(--radius-capsula)}
+.esc{display:grid;grid-template-columns:200px 1fr;align-items:center;row-gap:var(--space-2)}
+.raio{width:148px;height:104px;background:var(--brand-pedra);border:1px solid var(--neutro-500)}
+.elev{width:180px;height:120px;border-radius:var(--radius-card);background:var(--brand-papel)}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- 01 CAPA -->
+<section class="slide" data-n="1">
+  <div style="grid-column:1/5;grid-row:1;align-self:start"><img src="../assets/logos/logo-4-tempos-positivo.svg" alt="Logo 4 Tempos do Mercado, versão Positivo" style="width:444px;height:auto"></div>
+  <div style="grid-column:1/10;grid-row:2/4;align-self:center" class="stack">
+    <p class="mono" style="font-size:20px;color:var(--color-muted)">manual de marca · para o time de design</p>
+    <h1 class="display">Os 4 Tempos<br>do Mercado</h1>
+    <div class="faixas" style="margin-top:var(--space-3)"><span>a marca, os tokens e os</span><span>componentes do kit, em 16 slides</span></div>
+  </div>
+  <div style="grid-column:10/13;grid-row:1/4;display:flex;align-items:center;justify-content:center"><img src="../assets/logos/icone-4-tempos-laranja.svg" alt="" style="width:396px;height:auto"></div>
+  <div style="grid-column:1/-1;grid-row:4;align-self:end" class="fio"><span>carteira de indicadores do Profit · Nelogica e Ports Trader</span><span>DS 1.2.0 · out 2026</span></div>
+</section>
+
+<!-- 02 PRODUTO -->
+<section class="slide" data-n="2">
+  <div class="cab"><div class="fio"><span>o produto · fonte: OP</span><span>02 / 16</span></div>
+    <h2>A primeira carteira de indicadores da Nelogica</h2></div>
+  <div style="grid-column:1/7;grid-row:2/5" class="stack">
+    <p class="lead" style="color:var(--color-on-surface)">Quatro indicadores prontos para uso no Profit, vendidos como um produto só. A Nelogica lança com o Ports Trader na Black November de 2026.</p>
+    <p>O público é o trader iniciante de day trade. Ele usa a mesma estratégia todo dia e perde quando o mercado muda. A carteira entrega uma ferramenta para cada momento, e o curso ensina a reconhecer em qual momento ele está.</p>
+  </div>
+  <div style="grid-column:8/13;grid-row:2/5" class="stack-2 fichas">
+    <div class="fio"><span>público</span><span>trader iniciante</span></div>
+    <div class="fio"><span>carteira</span><span>4 indicadores, 1 carteira</span></div>
+    <div class="fio"><span>vem junto</span><span>curso, suporte, sala ao vivo</span></div>
+    <div class="fio"><span>planos</span><span>semestral · anual · bienal</span></div>
+    <div class="fio"><span>só no bienal</span><span>mentoria com o Ports</span></div>
+    <div class="fio"><span>carrinho</span><span>abre 03.11</span></div>
+    <div class="fio laranja"><span>lives</span><span>03.11 19h · 10.11 9h · 18.11 19h</span></div>
+    <p class="leg" style="margin-top:var(--space-3)">"o mercado muda de tempo, e o trader precisa saber em qual deles está." OP, mini bio do parceiro</p>
+  </div>
+</section>
+
+<!-- 03 O QUE COMUNICAR -->
+<section class="slide" data-n="3">
+  <div class="cab"><div class="fio"><span>o que a marca precisa dizer · OP e Estratégia de Comunicação</span><span>03 / 16</span></div>
+    <h2>Quatro regras de discurso que mudam o desenho</h2></div>
+  <div style="grid-column:1/-1;grid-row:2/5" class="regras">
+    <div class="regra"><span class="n">01</span><div><h3>O 4 vai em destaque</h3><p>"4 indicadores, 1 carteira" é o número da OP. O preço também pode ir grande. A taxa de acerto nunca.</p></div></div>
+    <div class="regra"><span class="n">02</span><div><h3>Os quatro tempos pesam igual</h3><p>Nenhum tempo ganha cor própria, tamanho maior ou posição de destaque. A ordem é sempre virar, acelerar, romper, voltar.</p></div></div>
+    <div class="regra"><span class="n">03</span><div><h3>Sem promessa de ganho</h3><p>Nada de valor por dia, "renda passiva" ou "no automático". Na página da campanha o preço aparece como 000 até a live 01.</p></div></div>
+    <div class="regra"><span class="n">04</span><div><h3>O stop aparece</h3><p>A campanha mostra o loss com naturalidade. Em print de gráfico, a saída no stop fica na tela, sem corte.</p></div></div>
+  </div>
+</section>
+
+<!-- 04 QUATRO TEMPOS -->
+<section class="slide" data-n="4">
+  <div class="cab"><div class="fio"><span>o conceito · Figma, cartão do tempo</span><span>04 / 16</span></div>
+    <h2>Virar, acelerar, romper, voltar</h2></div>
+  <div style="grid-column:1/-1;grid-row:2/5">
+    <table class="tabela-tempos">
+      <tr><th style="width:120px">glifo</th><th style="width:300px">tempo</th><th>o que o mercado está fazendo</th><th style="width:260px">leitura</th><th style="width:200px">ativos</th><th style="width:300px">indicador na OP</th></tr>
+      <tr><td><img src="../assets/logos/icone-tempo-virar.svg" alt="" style="width:48px;height:auto"></td><td><h3>Tempo de virar</h3></td><td>Virando e começando uma nova tendência de curto prazo</td><td class="mono">reversão</td><td class="mono">WIN, WDO</td><td>Reversão WIN e WDO</td></tr>
+      <tr><td><img src="../assets/logos/icone-tempo-acelerar.svg" alt="" style="width:48px;height:auto"></td><td><h3>Tempo de acelerar</h3></td><td>Acelerando a favor da tendência de curto prazo</td><td class="mono">impulso</td><td class="mono">BIT</td><td>Tendência BITFUT</td></tr>
+      <tr><td><img src="../assets/logos/icone-tempo-romper.svg" alt="" style="width:48px;height:auto"></td><td><h3>Tempo de romper</h3></td><td>Seguindo uma direção durante o pregão inteiro</td><td class="mono">tendência do dia</td><td class="mono">WIN, WDO, BIT</td><td>Tendência WIN, WDO e BIT</td></tr>
+      <tr><td><img src="../assets/logos/icone-tempo-voltar.svg" alt="" style="width:48px;height:auto"></td><td><h3>Tempo de voltar</h3></td><td>Esticado demais e voltando para o lugar, no swing</td><td class="mono">retorno à média</td><td class="mono">ações</td><td>Reversão em swing trade de ações</td></tr>
+    </table>
+    <p class="leg" style="margin-top:var(--space-3)">Os glifos têm 48px de largura, todos. O Figma marca a ligação entre o nome do tempo e o indicador da OP como "extrapolada (alta confiança): confirmar".</p>
+  </div>
+</section>
+
+<!-- 05 LOGO PRINCIPAL -->
+<section class="slide" data-n="5">
+  <div class="cab"><div class="fio"><span>logo · Logo/4 Tempos do Mercado</span><span>05 / 16</span></div>
+    <h2>Quatro versões do logo, escolhidas pelo fundo</h2></div>
+  <div style="grid-column:1/5;grid-row:2/5" class="stack">
+    <p>Símbolo de quatro barras em cápsula, nome e assinatura Nelogica®. O logo é desenhado; não refaça o nome em Syne.</p>
+    <div class="stack-2 fichas">
+      <div class="fio"><span>área livre</span><span>1 cápsula nos 4 lados</span></div>
+      <div class="fio"><span>largura mínima</span><span>120px</span></div>
+      <div class="fio"><span>abaixo de 120px</span><span>use o ícone</span></div>
+      <div class="fio"><span>nunca</span><span>esticar, contornar, sombrear</span></div>
+    </div>
+    <div style="display:flex;gap:var(--space-3);align-items:center;margin-top:var(--space-2)">
+      <div class="painel" style="width:96px;height:96px;background:var(--brand-papel);border:1px solid var(--color-border)"><img src="../assets/logos/icone-4-tempos-laranja.svg" alt="" style="width:48px"></div>
+      <p class="leg">Ícone/4 Tempos do Mercado: favicon e marca em tamanho pequeno. Versões Laranja, Mono tinta e Mono papel.</p>
+    </div>
+  </div>
+  <div style="grid-column:5/13;grid-row:2/5;display:grid;grid-template-columns:544px 544px;grid-template-rows:327px 327px;gap:var(--gut)">
+    <div class="stack-2"><div class="painel" style="height:287px;background:var(--brand-papel);border:1px solid var(--color-border)"><img src="../assets/logos/logo-4-tempos-positivo.svg" alt="Positivo"></div><span class="leg">Positivo · fundo papel ou pedra (padrão)</span></div>
+    <div class="stack-2"><div class="painel" style="height:287px;background:var(--brand-tinta)"><img src="../assets/logos/logo-4-tempos-negativo.svg" alt="Negativo"></div><span class="leg">Negativo · fundo tinta ou foto escura</span></div>
+    <div class="stack-2"><div class="painel" style="height:287px;background:var(--brand-papel);border:1px solid var(--color-border)"><img src="../assets/logos/logo-4-tempos-mono-tinta.svg" alt="Mono tinta"></div><span class="leg">Mono tinta · impressão em uma cor</span></div>
+    <div class="stack-2"><div class="painel" style="height:287px;background:var(--brand-laranja)"><img src="../assets/logos/logo-4-tempos-mono-papel.svg" alt="Mono papel"></div><span class="leg">Mono papel · sobre laranja</span></div>
+  </div>
+</section>
+
+<!-- 06 LOGOS DOS TEMPOS -->
+<section class="slide" data-n="6">
+  <div class="cab"><div class="fio"><span>logo · logos e ícones dos quatro tempos</span><span>06 / 16</span></div>
+    <h2>Um logo por tempo, no mesmo laranja</h2></div>
+  <div style="grid-column:1/5;grid-row:2/5" class="stack">
+    <p>Cada tempo tem logo e ícone de quatro cápsulas. A altura das cápsulas muda de um tempo para outro; a cor não.</p>
+    <p>Os quatro ícones são dimensionados pela largura, para pesarem igual quando aparecem juntos.</p>
+    <div class="stack-2 fichas">
+      <div class="fio"><span>versões do logo</span><span>as mesmas 4 do principal</span></div>
+      <div class="fio"><span>versões do ícone</span><span>laranja · mono tinta · mono papel</span></div>
+      <div class="fio"><span>nunca</span><span>com eixo, número ou seta de alta</span></div>
+    </div>
+  </div>
+  <div style="grid-column:5/13;grid-row:2/5;display:grid;grid-template-columns:544px 544px;grid-template-rows:repeat(2,327px);gap:var(--gut)">
+    <div class="painel" style="background:var(--brand-papel);border:1px solid var(--color-border)"><img src="../assets/logos/logo-tempo-virar.svg" alt="Logo Tempo de Virar" style="width:440px"></div>
+    <div class="painel" style="background:var(--brand-papel);border:1px solid var(--color-border)"><img src="../assets/logos/logo-tempo-acelerar.svg" alt="Logo Tempo de Acelerar" style="width:440px"></div>
+    <div class="painel" style="background:var(--brand-papel);border:1px solid var(--color-border)"><img src="../assets/logos/logo-tempo-romper.svg" alt="Logo Tempo de Romper" style="width:440px"></div>
+    <div class="painel" style="background:var(--brand-papel);border:1px solid var(--color-border)"><img src="../assets/logos/logo-tempo-voltar.svg" alt="Logo Tempo de Voltar" style="width:440px"></div>
+  </div>
+</section>
+
+<!-- 07 CORES DA MARCA -->
+<section class="slide" data-n="7">
+  <div style="grid-column:1/5;grid-row:1/5" class="stack">
+    <div class="fio"><span>cor · Primitivos/brand</span><span>07 / 16</span></div>
+    <h2 style="font-size:48.83px">Um laranja que não muda e cinco derivados com função</h2>
+    <p>#DF4A29 é a cor da marca. Os derivados mantêm o matiz (33,9 em OKLCH) e só existem para estado, texto e sombra.</p>
+    <p>No laranja vai só texto grande: 24px, ou 19px em Syne 700. Papel sobre laranja dá 3,67:1.</p>
+  </div>
+  <div style="grid-column:5/13;grid-row:1/5;align-self:start">
+    <table>
+      <tr><th style="width:72px"></th><th style="width:300px">variável</th><th style="width:150px">hex</th><th>papel (alias na coleção Cor)</th></tr>
+      <tr><td><div class="sw" style="background:#F4F3EF"></div></td><td class="mono">brand/papel</td><td class="mono">#F4F3EF</td><td>fundo padrão · texto sobre laranja e tinta</td></tr>
+      <tr><td><div class="sw" style="background:#E5E3DC"></div></td><td class="mono">brand/pedra</td><td class="mono">#E5E3DC</td><td>fundo do modo Pedra · surface-alt</td></tr>
+      <tr><td><div class="sw" style="background:#141619"></div></td><td class="mono">brand/tinta</td><td class="mono">#141619</td><td>texto · fundo do modo Tinta · anel de foco</td></tr>
+      <tr><td><div class="sw" style="background:#DF4A29"></div></td><td class="mono">brand/laranja</td><td class="mono">#DF4A29</td><td>primary · accent · surface-marca</td></tr>
+      <tr><td><div class="sw" style="background:#CF4020"></div></td><td class="mono">brand/laranja-hover</td><td class="mono">#CF4020</td><td>primary-hover</td></tr>
+      <tr><td><div class="sw" style="background:#BC391C"></div></td><td class="mono">brand/laranja-ativo</td><td class="mono">#BC391C</td><td>primary-active</td></tr>
+      <tr><td><div class="sw" style="background:#B63518"></div></td><td class="mono">brand/laranja-texto</td><td class="mono">#B63518</td><td>laranja em texto pequeno sobre papel e pedra</td></tr>
+      <tr><td><div class="sw" style="background:#E4583A"></div></td><td class="mono">brand/laranja-claro</td><td class="mono">#E4583A</td><td>laranja em texto pequeno sobre tinta</td></tr>
+      <tr><td><div class="sw" style="background:#CD4527"></div></td><td class="mono">brand/laranja-sombra</td><td class="mono">#CD4527</td><td>borda e meio-tom no modo Laranja · cápsulas do retrato</td></tr>
+    </table>
+    <p class="leg" style="margin-top:var(--space-2)">Estilos de cor no Figma: Branco, Segunda cor, Preto e CTA - 4T batem com papel, pedra, tinta e laranja.</p>
+  </div>
+</section>
+
+<!-- 08 NEUTROS, SINAL, FEEDBACK -->
+<section class="slide" data-n="8">
+  <div class="cab"><div class="fio"><span>cor · Primitivos/neutro, sinal e feedback</span><span>08 / 16</span></div>
+    <h2>Doze neutros quentes, sete cores de sinal, quatro de feedback</h2></div>
+  <div style="grid-column:1/-1;grid-row:2" >
+    <div class="swrow" style="grid-template-columns:repeat(12,1fr)">
+      <div class="swc"><div class="amostra" style="background:#F4F3EF;height:64px"></div><div class="nome">50</div><div class="hex">#F4F3EF</div></div>
+      <div class="swc"><div class="amostra" style="background:#E5E3DC;height:64px"></div><div class="nome">100</div><div class="hex">#E5E3DC</div></div>
+      <div class="swc"><div class="amostra" style="background:#D8D6CF;height:64px"></div><div class="nome">150</div><div class="hex">#D8D6CF</div></div>
+      <div class="swc"><div class="amostra" style="background:#C9C7C1;height:64px"></div><div class="nome">200</div><div class="hex">#C9C7C1</div></div>
+      <div class="swc"><div class="amostra" style="background:#ADABA5;height:64px"></div><div class="nome">300</div><div class="hex">#ADABA5</div></div>
+      <div class="swc"><div class="amostra" style="background:#8E8C87;height:64px"></div><div class="nome">400</div><div class="hex">#8E8C87</div></div>
+      <div class="swc"><div class="amostra" style="background:#74736F;height:64px"></div><div class="nome">500</div><div class="hex">#74736F</div></div>
+      <div class="swc"><div class="amostra" style="background:#5E6064;height:64px"></div><div class="nome">600</div><div class="hex">#5E6064</div></div>
+      <div class="swc"><div class="amostra" style="background:#45484C;height:64px"></div><div class="nome">700</div><div class="hex">#45484C</div></div>
+      <div class="swc"><div class="amostra" style="background:#2E3034;height:64px"></div><div class="nome">800</div><div class="hex">#2E3034</div></div>
+      <div class="swc"><div class="amostra" style="background:#1E2124;height:64px"></div><div class="nome">900</div><div class="hex">#1E2124</div></div>
+      <div class="swc"><div class="amostra" style="background:#141619;height:64px"></div><div class="nome">950</div><div class="hex">#141619</div></div>
+    </div>
+    <p class="leg" style="margin-top:var(--space-2)">neutro/700 é o texto de corpo no papel · 600 o texto secundário · 500 a borda de componente (mínimo 3:1) · 200 a borda de card</p>
+  </div>
+  <div style="grid-column:1/8;grid-row:3/5">
+    <p class="mono" style="font-size:20px;margin-bottom:var(--space-2);color:var(--color-on-surface)">sinal · as cores do gráfico</p>
+    <div class="swrow" style="grid-template-columns:repeat(7,1fr)">
+      <div class="swc"><div class="amostra" style="background:#03A14A"></div><div class="nome">compra</div><div class="hex">#03A14A</div></div>
+      <div class="swc"><div class="amostra" style="background:#7CD591"></div><div class="nome">compra-claro</div><div class="hex">#7CD591</div></div>
+      <div class="swc"><div class="amostra" style="background:#D02940"></div><div class="nome">venda</div><div class="hex">#D02940</div></div>
+      <div class="swc"><div class="amostra" style="background:#F49191"></div><div class="nome">venda-claro</div><div class="hex">#F49191</div></div>
+      <div class="swc"><div class="amostra" style="background:#F3C530"></div><div class="nome">saida</div><div class="hex">#F3C530</div></div>
+      <div class="swc"><div class="amostra" style="background:#7544CD"></div><div class="nome">saida-roxo</div><div class="hex">#7544CD</div></div>
+      <div class="swc"><div class="amostra" style="background:#ADABA5"></div><div class="nome">neutro</div><div class="hex">#ADABA5</div></div>
+    </div>
+    <p class="leg" style="margin-top:var(--space-2)">O Figma não descreve o papel de saida-roxo nem de neutro. O How-To fala em dourado no alvo e fúcsia no stop: confirmar se saida e saida-roxo são esses dois.</p>
+  </div>
+  <div style="grid-column:9/13;grid-row:3/5">
+    <p class="mono" style="font-size:20px;margin-bottom:var(--space-2);color:var(--color-on-surface)">feedback · estados do campo</p>
+    <div class="swrow" style="grid-template-columns:repeat(4,1fr)">
+      <div class="swc"><div class="amostra" style="background:#03A14A"></div><div class="nome">success</div><div class="hex">#03A14A</div></div>
+      <div class="swc"><div class="amostra" style="background:#197037"></div><div class="nome">-texto</div><div class="hex">#197037</div></div>
+      <div class="swc"><div class="amostra" style="background:#D02940"></div><div class="nome">danger</div><div class="hex">#D02940</div></div>
+      <div class="swc"><div class="amostra" style="background:#BE2038"></div><div class="nome">-texto</div><div class="hex">#BE2038</div></div>
+    </div>
+    <p class="leg" style="margin-top:var(--space-2)">A versão -texto é a que vai em letra pequena. Erro e sucesso sempre com cor e mensagem.</p>
+  </div>
+</section>
+
+<!-- 09 SUPERFÍCIES -->
+<section class="slide" data-n="9">
+  <div class="cab"><div class="fio"><span>cor · coleção Cor, 4 modos</span><span>09 / 16</span></div>
+    <h2>Quatro superfícies, trocadas pelo modo do frame</h2></div>
+  <div style="grid-column:1/-1;grid-row:2/4"><img class="fig box" src="../assets/fundamentos/superficies.png" alt="Os quatro modos de superfície no Figma: Papel, Pedra, Tinta e Laranja" style="width:1728px"></div>
+  <div style="grid-column:1/7;grid-row:4" class="stack-2">
+    <p>Os componentes usam variável semântica: <span class="mono">color/surface</span>, <span class="mono">on-surface</span>, <span class="mono">texto-corpo</span>, <span class="mono">muted</span>, <span class="mono">border</span>. Troque o modo do frame e tudo dentro dele se ajusta.</p>
+  </div>
+  <div style="grid-column:7/13;grid-row:4" class="stack-2">
+    <p>Os modos têm o mesmo nome das classes do código: <span class="mono">.superficie-papel</span>, <span class="mono">-pedra</span>, <span class="mono">-tinta</span>, <span class="mono">-laranja</span>. No Laranja, corpo e rótulo pequeno ficam de fora.</p>
+  </div>
+</section>
+
+<!-- 10 TIPOGRAFIA -->
+<section class="slide" data-n="10">
+  <div class="cab"><div class="fio"><span>tipografia · coleção Tipografia e estilos de texto</span><span>10 / 16</span></div>
+    <h2>Três famílias, um peso cada</h2></div>
+  <div style="grid-column:1/-1;grid-row:2/4" class="esp-tipo">
+    <div><div class="fio"><span>títulos e botões</span><span>Syne 700</span></div><div class="ab" style="font-family:var(--font-titulo);font-weight:700">Aa</div><p style="font-family:var(--font-titulo);font-weight:700;color:var(--color-on-surface);font-size:31.25px;line-height:1.15">Os 4 tempos do mercado</p></div>
+    <div><div class="fio"><span>corpo</span><span>Inter 400</span></div><div class="ab">Aa</div><p style="color:var(--color-on-surface)">A carteira marca a leitura no gráfico; quem decide é você.</p></div>
+    <div><div class="fio"><span>data, hora, preço, ativo</span><span>DM Mono 400</span></div><div class="ab mono">Aa</div><p class="mono" style="color:var(--color-on-surface)">live 02 · 10.11 · 9h</p></div>
+  </div>
+  <div style="grid-column:1/-1;grid-row:4">
+    <table class="compacta">
+      <tr><th>estilo</th><th>desktop</th><th>entrelinha</th><th>estilo</th><th>desktop</th><th>entrelinha</th></tr>
+      <tr><td class="mono">Título/Display</td><td class="mono">61,04px</td><td class="mono">1,06</td><td class="mono">Corpo/Lead</td><td class="mono">20px</td><td class="mono">1,5</td></tr>
+      <tr><td class="mono">Título/H1 · H2</td><td class="mono">48,83 · 39,06px</td><td class="mono">1,15</td><td class="mono">Corpo/Base · Pequeno</td><td class="mono">16 · 14px</td><td class="mono">1,5</td></tr>
+      <tr><td class="mono">Título/Hero</td><td class="mono">64px · -2%</td><td class="mono">1,06</td><td class="mono">Mono/Rótulo · Etiqueta</td><td class="mono">14 · 12px caixa alta</td><td class="mono">1,3 · 1</td></tr>
+    </table>
+    <p class="leg" style="margin-top:var(--space-1)">Escala de razão 1,25 sobre 16px. Os estilos guardam o valor de celular; o de desktop está na coleção Responsivo.</p>
+  </div>
+</section>
+
+<!-- 11 ESPAÇO, RAIO, ELEVAÇÃO -->
+<section class="slide" data-n="11">
+  <div class="cab"><div class="fio"><span>forma e espaço · coleção Forma e Espaço, estilos de efeito</span><span>11 / 16</span></div>
+    <h2>Grid de 8, e tudo que se toca é cápsula</h2></div>
+  <div style="grid-column:1/5;grid-row:2/5" class="stack">
+    <div class="esc mono" style="font-size:16px">
+      <span>space/1 · 8</span><div class="barra" style="width:8px"></div>
+      <span>space/2 · 16</span><div class="barra" style="width:16px"></div>
+      <span>space/3 · 24</span><div class="barra" style="width:24px"></div>
+      <span>space/4 · 32</span><div class="barra" style="width:32px"></div>
+      <span>space/6 · 48</span><div class="barra" style="width:48px"></div>
+      <span>space/8 · 64</span><div class="barra" style="width:64px"></div>
+      <span>space/12 · 96</span><div class="barra" style="width:96px"></div>
+    </div>
+    <p style="font-size:20px">Respiro: 8 entre par, 16 entre textos, 24 entre itens, 48 a 64 entre blocos. A seção usa 96 no desktop.</p>
+  </div>
+  <div style="grid-column:5/13;grid-row:2/4" class="stack-2">
+    <div style="display:flex;gap:var(--space-6);align-items:flex-end">
+      <div class="stack-2"><div class="raio" style="border-radius:8px"></div><span class="leg">sm · 8</span></div>
+      <div class="stack-2"><div class="raio" style="border-radius:16px"></div><span class="leg">md · 16</span></div>
+      <div class="stack-2"><div class="raio" style="border-radius:24px"></div><span class="leg">card · 24</span></div>
+      <div class="stack-2"><div class="raio" style="border-radius:32px"></div><span class="leg">midia · 32</span></div>
+      <div class="stack-2"><div class="raio" style="border-radius:999px"></div><span class="leg">capsula · 999</span></div>
+    </div>
+    <p style="font-size:20px">Botão, campo, etiqueta e nav são cápsula. 24 e 32 só em card e mídia.</p>
+  </div>
+  <div style="grid-column:5/13;grid-row:4;background:var(--brand-pedra);border-radius:var(--radius-card);padding:var(--space-4);display:flex;gap:var(--space-4);align-items:center">
+    <div class="elev" style="box-shadow:0 1px 2px rgba(20,22,25,.06),0 1px 1px rgba(20,22,25,.04);width:120px;height:96px"></div>
+    <div class="elev" style="box-shadow:0 2px 4px -1px rgba(20,22,25,.06),0 8px 16px -4px rgba(20,22,25,.08);width:120px;height:96px"></div>
+    <div class="elev" style="box-shadow:0 4px 8px -2px rgba(20,22,25,.07),0 16px 28px -8px rgba(20,22,25,.10);width:120px;height:96px"></div>
+    <div class="elev" style="box-shadow:0 8px 16px -4px rgba(20,22,25,.08),0 24px 40px -12px rgba(20,22,25,.12);width:120px;height:96px"></div>
+    <p style="font-size:20px;flex:1">Elevação 1 a 4. A página fica sem sombra; a 3 é da nav; a 4, do modal.</p>
+  </div>
+</section>
+
+<!-- 12 BOTÕES -->
+<section class="slide" data-n="12">
+  <div class="cab"><div class="fio"><span>componentes · Botão, Botão com disco, Botão só de disco</span><span>12 / 16</span></div>
+    <h2>Três botões, e o disco laranja nunca sai</h2></div>
+  <div style="grid-column:1/-1;grid-row:2;align-self:start" class="stack-2">
+    <img class="fig" src="../assets/componentes/botao.png" alt="Botão: Primário, Secundário e Tinta em seis estados" style="width:1136px">
+    <p class="leg">Botão · linhas: Primário, Secundário, Tinta · colunas: repouso, hover, foco, ativo, desabilitado, carregando. Primário em Syne 700 a 19px, nunca menor. Sobre laranja, use o Tinta.</p>
+  </div>
+  <div style="grid-column:1/9;grid-row:3/5" class="stack-2">
+    <img class="fig" src="../assets/componentes/botao-com-disco.png" alt="Botão com disco: Tinta e Contorno, estados e tamanhos" style="width:1136px">
+    <p class="leg">Botão com disco · Tinta e Contorno, mesmos 6 estados · Compacto 44px, Padrão 52px, Grande 66px. Não divide a tela com o Primário.</p>
+  </div>
+  <div style="grid-column:9/13;grid-row:3/5" class="stack-2">
+    <img class="fig" src="../assets/componentes/botao-so-disco.png" alt="Botão só de disco: Laranja e Tinta em cinco estados" style="width:396px">
+    <p class="leg">Só de disco · alvo de 52px · Laranja e Tinta · rótulo acessível obrigatório no código.</p>
+    <img class="fig" src="../assets/componentes/icones-de-acao.png" alt="Ícones de ação" style="width:396px;border-radius:var(--radius-md)">
+    <p class="leg">Ícones do disco (Lucide, traço 2): seta direita avança, baixo rola, cima-direita sai, play.</p>
+  </div>
+</section>
+
+<!-- 13 ASSINATURAS E FORMULÁRIO -->
+<section class="slide" data-n="13">
+  <div class="cab"><div class="fio"><span>componentes · Rótulo sobre fio, Compasso, Etiqueta, Campo</span><span>13 / 16</span></div>
+    <h2>As duas assinaturas: o fio com dado em mono e o compasso de quatro</h2></div>
+  <div style="grid-column:1/7;grid-row:2" class="stack-2">
+    <img class="fig" src="../assets/componentes/rotulo-sobre-fio.png" alt="Rótulo sobre fio, padrão e laranja" style="width:840px">
+    <p class="leg">A2 · data, hora, preço e ativo em DM Mono caixa baixa, sobre fio de 1px. Fio laranja só para "a próxima". Nunca rotula ganho, percentual ou acerto.</p>
+  </div>
+  <div style="grid-column:7/13;grid-row:2" class="stack-2">
+    <img class="fig" src="../assets/componentes/compasso.png" alt="Compasso: nenhum, 1, 2, 3 e 4 ativos" style="width:640px">
+    <p class="leg">A1 · marca a posição numa sequência de quatro (os tempos, os módulos). Nunca importância, nunca em lista que não tenha quatro itens.</p>
+  </div>
+  <div style="grid-column:1/4;grid-row:3/5" class="stack-2">
+    <img class="fig" src="../assets/componentes/etiqueta.png" alt="Etiqueta contorno e cheia" style="width:396px">
+    <p class="leg">Etiqueta · contorno e cheia · ativo, tempo gráfico ou plano. Mono 12 em caixa alta, sem hover; o laranja fica só na cápsula.</p>
+  </div>
+  <div style="grid-column:4/13;grid-row:3/5" class="stack-2">
+    <img class="fig" src="../assets/componentes/campo.png" alt="Campo em seis estados" style="width:1284px">
+    <p class="leg">Campo · repouso, hover, foco, erro, sucesso, desabilitado · cápsula de 52px, fonte de 16px, rótulo sempre visível em mono.</p>
+  </div>
+</section>
+
+<!-- 14 BLOCOS -->
+<section class="slide" data-n="14">
+  <div class="cab"><div class="fio"><span>componentes · blocos de página</span><span>14 / 16</span></div>
+    <h2>Blocos de página montados com as assinaturas</h2></div>
+  <div style="grid-column:1/-1;grid-row:2/4" class="stack-2">
+    <img class="fig" src="../assets/componentes/cartao-do-tempo.png" alt="Cartão do tempo nas quatro variantes" style="width:1500px">
+    <p class="leg">Cartão do tempo · glifo de 48px de largura, compasso com a posição, ficha A2. Ordem fixa. Sem clique, sem hover.</p>
+  </div>
+  <div style="grid-column:1/5;grid-row:4" class="stack-2"><img class="fig" src="../assets/componentes/plano.png" alt="Plano em papel e tinta" style="width:336px"><p class="leg">Plano · preço em 000 até a live 01</p></div>
+  <div style="grid-column:5/9;grid-row:4" class="stack-2"><img class="fig" src="../assets/componentes/agenda-item.png" alt="Agenda item normal e próxima" style="width:544px"><p class="leg">Agenda item · a próxima live leva fio laranja</p></div>
+  <div style="grid-column:9/13;grid-row:4" class="stack-2"><img class="fig" src="../assets/componentes/nav-capsula.png" alt="Nav em cápsula, celular e desktop" style="width:544px"><p class="leg">Nav em cápsula · papel + Elevação/3</p></div>
+</section>
+
+<!-- 15 TELA DE ATUALIZAÇÃO -->
+<section class="slide" data-n="15">
+  <div class="cab"><div class="fio"><span>aplicação · página Tela de atualização, 1920x1080</span><span>15 / 16</span></div>
+    <h2>Tela de atualização em três línguas</h2></div>
+  <div style="grid-column:1/9;grid-row:2/5" class="stack-2">
+    <img class="fig" src="../assets/artes/tela-atualizacao-pt.png" alt="Arte 1920×1080 em português" style="width:1136px;border-radius:var(--radius-md)">
+    <p class="leg">PT · título Syne 700 a 120px · duas faixas laranja a 46px · botão com disco a 44px com disco de 92px · retrato com meio-tom laranja</p>
+  </div>
+  <div style="grid-column:9/13;grid-row:2/5" class="stack-2">
+    <img class="fig" src="../assets/artes/tela-atualizacao-en.png" alt="Arte 1920×1080 em inglês" style="width:528px;border-radius:var(--radius-sm)">
+    <p class="leg">EN · "Turn, accelerate, break out, revert:"</p>
+    <img class="fig" src="../assets/artes/tela-atualizacao-es.png" alt="Arte 1920×1080 em espanhol" style="width:528px;border-radius:var(--radius-sm);margin-top:var(--space-2)">
+    <p class="leg">ES · "Girar, acelerar, romper, volver:"</p>
+  </div>
+</section>
+
+<!-- 16 KIT E LACUNAS -->
+<section class="slide" data-n="16">
+  <div class="cab"><div class="fio"><span>operação · onde está cada coisa</span><span>16 / 16</span></div>
+    <h2>Como usar o kit, e o que ainda falta confirmar</h2></div>
+  <div style="grid-column:1/7;grid-row:2/5" class="stack-2 fichas">
+    <div class="fio"><span>DS · Fundamentos</span><span>variáveis e estilos</span></div>
+    <p style="font-size:20px">5 coleções: Primitivos, Cor (4 modos), Forma e Espaço, Responsivo (Mobile e Desktop), Tipografia. Estilos: 7 de cor, 21 de texto, 4 de elevação.</p>
+    <div class="fio"><span>DS · Componentes</span><span>21 componentes e 2 fundos</span></div>
+    <p style="font-size:20px">Cada um traz a regra de uso na descrição. Leia antes de destacar.</p>
+    <div class="fio"><span>DS · Logos e Ícones</span><span>5 logos, 5 ícones</span></div>
+    <p style="font-size:20px">Exporte daqui; não redesenhe.</p>
+    <div class="fio"><span>no código</span><span>DS 1.2.0</span></div>
+    <p style="font-size:20px">Classes <span class="mono">.superficie-*</span> e os mesmos nomes de variável. O zip com os tokens não estava visível na leitura do arquivo: peça o link.</p>
+  </div>
+  <div style="grid-column:8/13;grid-row:2/5" class="stack-2">
+    <div class="fio laranja"><span>lacunas</span><span>a confirmar</span></div>
+    <ol style="padding-left:28px;display:flex;flex-direction:column;gap:var(--space-1)">
+      <li style="font-size:20px">Nome: a OP diz "Os 4 Tempos de Ports", o logo diz "4 Tempos do Mercado".</li>
+      <li style="font-size:20px">Ligação entre o nome do tempo e o indicador da OP.</li>
+      <li style="font-size:20px">Stop em fúcsia (How-To) ou roxo #7544CD (Figma).</li>
+      <li style="font-size:20px">Papel de saida-roxo, sinal/neutro e complementar 2, 3 e 4.</li>
+      <li style="font-size:20px">Texto da garantia: o Figma pede o da OP, e a OP não tem.</li>
+      <li style="font-size:20px">Chips e caixas de ícone não existem no kit com esses nomes.</li>
+      <li style="font-size:20px">Rodapé sem razão social e CNPJ.</li>
+    </ol>
+  </div>
+</section>
+
+</div>
+<script>
+(function(){
+  var deck=document.getElementById('deck'),slides=[].slice.call(deck.querySelectorAll('.slide')),i=0;
+  slides.forEach(function(s){var o=document.createElement('div');o.className='grid-ov';
+    o.innerHTML='<div class="margem"></div><div class="cols">'+'<i></i>'.repeat(12)+'</div><div class="rows">'+'<i></i>'.repeat(4)+'</div>';s.appendChild(o);});
+  var print=/[?&]print/.test(location.search);
+  if(print){document.documentElement.style.overflow='visible';document.body.style.overflow='visible';deck.style.position='static';deck.style.height='auto';
+    slides.forEach(function(s){s.classList.add('ativo');s.style.position='relative';s.style.breakAfter='page';});return;}
+  function fit(){var k=Math.min(innerWidth/1920,innerHeight/1080);deck.style.transform='translate('+(innerWidth-1920*k)/2+'px,'+(innerHeight-1080*k)/2+'px) scale('+k+')';}
+  function go(n){i=Math.max(0,Math.min(slides.length-1,n));slides.forEach(function(s,j){s.classList.toggle('ativo',j===i);});
+    try{history.replaceState(null,'','#'+(i+1));}catch(e){}}
+  addEventListener('resize',fit);
+  addEventListener('hashchange',function(){var n=(parseInt(location.hash.slice(1),10)||1)-1;if(n!==i)go(n);});
+  addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key==='PageDown'||e.key===' '){go(i+1);e.preventDefault();}
+    else if(e.key==='ArrowLeft'||e.key==='ArrowUp'||e.key==='PageUp'){go(i-1);e.preventDefault();}
+    else if(e.key==='Home'){go(0);}else if(e.key==='End'){go(slides.length-1);}
+    else if(e.key==='g'||e.key==='G'){document.body.classList.toggle('mostra-grid');}
+  });
+  addEventListener('click',function(e){if(e.clientX>innerWidth/2)go(i+1);else go(i-1);});
+  fit();go((parseInt(location.hash.slice(1),10)||1)-1);
+})();
+</script>
+</body>
+</html>
